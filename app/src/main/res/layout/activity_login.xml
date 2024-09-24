@@ -13,13 +13,13 @@
 
     <ImageView
         android:id="@+id/imageView5"
-        android:layout_width="393dp"
-        android:layout_height="338dp"
-        android:scaleType="fitCenter"
+        android:layout_width="429dp"
+        android:layout_height="262dp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_launcher_icon_foreground" />
+        app:srcCompat="@mipmap/wanderlog_logo" />
 
     <EditText
         android:id="@+id/username"
