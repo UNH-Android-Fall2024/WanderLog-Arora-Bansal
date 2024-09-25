@@ -56,21 +56,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
-            val loginResult = it ?: return@Observer
 
-            loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
-            }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
-
-            //Complete and destroy login activity once successful
-            finish()
-        })
 
         username.afterTextChanged {
             loginViewModel.loginDataChanged(
@@ -90,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
+                        signIn(
                             username.text.toString(),
                             password.text.toString()
                         )
@@ -117,25 +103,30 @@ class LoginActivity : AppCompatActivity() {
     private fun signIn(email: String, password: String) {
         // [START sign_in_with_email]
         Log.d("SignIn","reached function")
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                Log.d("SignIn","reached function part 2")
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithEmail:success")
-                    val user = auth.currentUser
-                    updateUI(user)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(
-                        baseContext,
-                        "Authentication failed.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    updateUI(null)
+        try {
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    Log.d("SignIn", "reached function part 2")
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithEmail:success")
+                        val user = auth.currentUser
+                        updateUI(user)
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        Toast.makeText(
+                            baseContext,
+                            "Authentication failed.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        updateUI(null)
+                    }
                 }
-            }
+        }
+        catch(e: Throwable){
+            Log.d(TAG, "Email Not Found?")
+        }
         // [END sign_in_with_email]
     }
 
@@ -150,30 +141,26 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun updateUI(user: FirebaseUser?) {
-        val myIntent = Intent(
-            this@LoginActivity,
-            MainActivity::class.java
-        )
-        startActivity(myIntent)
+        if(user != null) {
+            val myIntent = Intent(
+                this@LoginActivity,
+                MainActivity::class.java
+            )
+            startActivity(myIntent)
+        }
+        else{
+            binding.username.text.clear()
+            binding.password.text.clear()
+            binding.loading.visibility = View.INVISIBLE
+
+        }
     }
 
     private fun reload() {
     }
 
     companion object {
-        private const val TAG = "EmailPassword"
-    }
-
-
-    private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
-        // TODO : initiate successful logged in experience
-        Toast.makeText(
-            applicationContext,
-            "$welcome $displayName",
-            Toast.LENGTH_LONG
-        ).show()
+        private const val TAG = "Login"
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
