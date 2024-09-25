@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.wanderlog" />
+                  <option name="mobileSdkAppId" value="1:174630504860:android:3de2b083201dec76c72059" />
+                  <option name="projectId" value="wanderlog-s24-c3f37" />
+                  <option name="projectNumber" value="174630504860" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
