@@ -1,6 +1,5 @@
 package com.example.wanderlog.ui.login
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -15,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.wanderlog.MainActivity
-import com.example.wanderlog.R
 import com.example.wanderlog.databinding.ActivityLoginBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -38,6 +36,15 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.password
         val login = binding.login
         val loading = binding.loading
+        val signup = binding.signup
+
+        signup!!.setOnClickListener {
+            val myIntent = Intent(
+                this@LoginActivity,
+                SignupActivity::class.java
+            )
+            startActivity(myIntent)
+        }
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
@@ -88,6 +95,8 @@ class LoginActivity : AppCompatActivity() {
                 loading.visibility = View.VISIBLE
                 signIn(username.text.toString(),password.text.toString())
             }
+
+
         }
     }
     public override fun onStart() {
@@ -152,6 +161,7 @@ class LoginActivity : AppCompatActivity() {
             binding.username.text.clear()
             binding.password.text.clear()
             binding.loading.visibility = View.INVISIBLE
+            showLoginFailed(1)
 
         }
     }
