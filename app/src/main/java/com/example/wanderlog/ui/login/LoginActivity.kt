@@ -139,16 +139,6 @@ class LoginActivity : AppCompatActivity() {
         // [END sign_in_with_email]
     }
 
-    private fun sendEmailVerification() {
-        // [START send_email_verification]
-        val user = auth.currentUser!!
-        user.sendEmailVerification()
-            .addOnCompleteListener(this) { task ->
-                // Email Verification sent
-            }
-        // [END send_email_verification]
-    }
-
     private fun updateUI(user: FirebaseUser?) {
         if(user != null) {
             val myIntent = Intent(
@@ -161,7 +151,7 @@ class LoginActivity : AppCompatActivity() {
             binding.username.text.clear()
             binding.password.text.clear()
             binding.loading.visibility = View.INVISIBLE
-            showLoginFailed(1)
+            showLoginFailed(2)
 
         }
     }
