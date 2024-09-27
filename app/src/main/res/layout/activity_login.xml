@@ -14,9 +14,9 @@
 
     <ImageView
         android:id="@+id/imageView5"
-        android:layout_width="429dp"
+        android:layout_width="match_parent"
         android:layout_height="262dp"
-        app:srcCompat="@mipmap/wanderlog_logo" />
+        app:srcCompat="@drawable/wanderlog_logo" />
 
     <EditText
         android:id="@+id/username"
@@ -44,6 +44,15 @@
         android:selectAllOnFocus="true"
         android:background="@drawable/edit_text_border"
         android:paddingStart="10dp" />
+
+    <TextView
+        android:id="@+id/failed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Incorrect ID or Password! Please try again!"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:textColor="#FF0000"/>
 
     <Button
         android:id="@+id/login"

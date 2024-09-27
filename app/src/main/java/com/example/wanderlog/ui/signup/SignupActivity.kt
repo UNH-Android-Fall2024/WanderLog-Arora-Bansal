@@ -1,25 +1,22 @@
-package com.example.wanderlog.ui.login
-
+package com.example.wanderlog.ui.signup
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.example.wanderlog.MainActivity
 import com.example.wanderlog.databinding.ActivitySignupBinding
+import com.example.wanderlog.ui.login.LoginActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var loginViewModel: LoginViewModel
+    private val db = FirebaseFirestore.getInstance()
     private lateinit var binding: ActivitySignupBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +66,13 @@ class SignupActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "createUserWithEmail:success")
                     val user = auth.currentUser
+                    user?.let {
+                        // Name, email address, and profile photo Url
+                        val name = binding.fullname.text.toString()
+                        val uid = it.uid
+                        Log.d("UserDetails","$name $email $uid")
+                        storeUserData(uid,name,email)
+                    }
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
@@ -84,7 +88,25 @@ class SignupActivity : AppCompatActivity() {
         // [END create_user_with_email]
     }
 
+    private fun storeUserData(uid: String, name: String, email: String ){
 
+        val submit = hashMapOf(
+            "bio" to "",
+            "email" to email,
+            "fullname" to name,
+            "profilePicture" to "",
+            "FirebaseAuthID" to uid,
+        )
+        // Add a new document with a generated ID
+        db.collection("users")
+            .add(submit)
+            .addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+    }
     private fun sendEmailVerification() {
         // [START send_email_verification]
         val user = auth.currentUser!!

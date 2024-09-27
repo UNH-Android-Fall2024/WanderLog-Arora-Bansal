@@ -10,13 +10,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".ui.login.SignupActivity">
+    tools:context=".ui.signup.SignupActivity">
 
     <ImageView
         android:id="@+id/imageView5"
-        android:layout_width="429dp"
-        android:layout_height="262dp"
-        app:srcCompat="@mipmap/wanderlog_logo" />
+        android:layout_width="142dp"
+        android:layout_height="75dp"
+        app:srcCompat="@mipmap/wanderlog_text_icon" />
+
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="110dp"
+        android:layout_height="113dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/profile_picture_border"
+        app:srcCompat="@drawable/baseline_person_24" />
 
     <EditText
         android:id="@+id/email"
@@ -98,8 +108,7 @@
             android:id="@+id/text_view_1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center"
             android:text="Already have an account? "
             android:textAlignment="center" />
 

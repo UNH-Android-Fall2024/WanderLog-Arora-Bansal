@@ -1,5 +1,6 @@
 package com.example.wanderlog.ui.login
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -13,8 +14,10 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.transition.Visibility
 import com.example.wanderlog.MainActivity
 import com.example.wanderlog.databinding.ActivityLoginBinding
+import com.example.wanderlog.ui.signup.SignupActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -124,12 +127,8 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            baseContext,
-                            "Authentication failed.",
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                        updateUI(null)
+                        binding.failed!!.visibility = View.VISIBLE
+
                     }
                 }
         }
@@ -166,6 +165,11 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        Toast.makeText(applicationContext, "You are not logged in", Toast.LENGTH_SHORT).show()
+    }
 }
 
 /**
@@ -181,4 +185,5 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
+
 }
