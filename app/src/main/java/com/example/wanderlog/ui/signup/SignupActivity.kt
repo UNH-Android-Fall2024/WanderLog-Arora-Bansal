@@ -2,6 +2,7 @@ package com.example.wanderlog.ui.signup
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -56,35 +57,78 @@ class SignupActivity : AppCompatActivity() {
         }
     }
     // [END on_start_check_user]
+    private fun verifyEnteredDetails() : Boolean{
+        Log.d("Signup1", "Reached here" )
 
+        val pass = binding.password.text.toString()
+        val cpass = binding.confirmpassword.text.toString()
+        val email = binding.email.text.toString()
+        val name = binding.fullname.text.toString()
+        val bool = pass == cpass
+        if (name != "" && email != "" && pass != "" && cpass != "") {
+            Log.d(/* tag = */ "Signup1",/* msg = */ "$bool")
+            if (pass == cpass) {
+                if (pass.length > 5) {
+                    if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        return true
+                    } else {
+                        binding.failed.text = "The email is incorrect!"
+                        binding.failed.visibility = View.VISIBLE
+                        return false
+                    }
+                } else {
+                    binding.failed.text = "The password must be atleast 6 characters long!"
+                    binding.failed.visibility = View.VISIBLE
+                    return false
+                }
+            } else {
+                binding.failed.text = "Passwords do not match!"
+                binding.failed.visibility = View.VISIBLE
+                return false
+            }
+        }
+        else{
+            binding.failed.text = "Please enter all the details to continue!"
+            binding.failed.visibility = View.VISIBLE
+            return false
+        }
+    }
     private fun createAccount(email: String, password: String) {
         // [START create_user_with_email]
-        sendEmailVerification()
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "createUserWithEmail:success")
-                    val user = auth.currentUser
-                    user?.let {
-                        // Name, email address, and profile photo Url
-                        val name = binding.fullname.text.toString()
-                        val uid = it.uid
-                        Log.d("UserDetails","$name $email $uid")
-                        storeUserData(uid,name,email)
+
+
+
+        if (verifyEnteredDetails()) {
+            Log.d("Signup1", "Success?" )
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "createUserWithEmail:success")
+                        val user = auth.currentUser
+                        user?.let {
+                            // Name, email address, and profile photo Url
+                            val name = binding.fullname.text.toString()
+                            val uid = it.uid
+                            Log.d("UserDetails", "$name $email $uid")
+                            storeUserData(uid, name, email)
+                        }
+                        updateUI(user)
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                        Toast.makeText(
+                            baseContext,
+                            "Authentication failed.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
                     }
-                    updateUI(user)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(
-                        baseContext,
-                        "Authentication failed.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    updateUI(null)
                 }
-            }
+        }
+        else{
+            Log.d("Signup","Fail")
+        }
+
         // [END create_user_with_email]
     }
 

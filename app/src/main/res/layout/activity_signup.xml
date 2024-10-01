@@ -16,7 +16,7 @@
         android:id="@+id/imageView5"
         android:layout_width="142dp"
         android:layout_height="75dp"
-        app:srcCompat="@mipmap/wanderlog_text_icon" />
+        app:srcCompat="@drawable/wanderlog_text_icon" />
 
 
     <ImageView
@@ -70,6 +70,28 @@
         android:paddingStart="10dp"
         android:selectAllOnFocus="true" />
 
+    <EditText
+        android:id="@+id/confirmpassword"
+        android:layout_width="match_parent"
+        android:layout_marginTop="21dp"
+        android:layout_height="48dp"
+        android:autofillHints="Confirm Password"
+        android:background="@drawable/edit_text_border"
+        android:hint="Confirm Password"
+        android:imeOptions="actionDone"
+        android:inputType="textPassword"
+        android:paddingStart="10dp"
+        android:selectAllOnFocus="true" />
+
+    <TextView
+        android:id="@+id/failed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Error!"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:textColor="#FF0000"/>
+
     <Button
         android:id="@+id/signup"
         android:layout_width="match_parent"
@@ -85,6 +107,7 @@
         app:cornerRadius="6dp"
 
          />
+
 
     <ProgressBar
         android:id="@+id/loading"

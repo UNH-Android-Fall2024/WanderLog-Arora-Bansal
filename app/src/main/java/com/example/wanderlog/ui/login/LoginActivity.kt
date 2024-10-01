@@ -10,11 +10,9 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.transition.Visibility
 import com.example.wanderlog.MainActivity
 import com.example.wanderlog.databinding.ActivityLoginBinding
 import com.example.wanderlog.ui.signup.SignupActivity
@@ -66,7 +64,13 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-
+        binding.forgotPassword!!.setOnClickListener {
+            val myIntent = Intent(
+                this@LoginActivity,
+                ForgotPasswordActivity::class.java
+            )
+            startActivity(myIntent)
+        }
 
         username.afterTextChanged {
             loginViewModel.loginDataChanged(
@@ -96,6 +100,7 @@ class LoginActivity : AppCompatActivity() {
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
+                binding.failed!!.visibility  = View.GONE
                 signIn(username.text.toString(),password.text.toString())
             }
 
@@ -128,6 +133,7 @@ class LoginActivity : AppCompatActivity() {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
                         binding.failed!!.visibility = View.VISIBLE
+                        binding.loading.visibility = View.GONE
 
                     }
                 }
@@ -150,7 +156,7 @@ class LoginActivity : AppCompatActivity() {
             binding.username.text.clear()
             binding.password.text.clear()
             binding.loading.visibility = View.INVISIBLE
-            showLoginFailed(2)
+            showLoginFailed()
 
         }
     }
@@ -162,8 +168,8 @@ class LoginActivity : AppCompatActivity() {
         private const val TAG = "Login"
     }
 
-    private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    private fun showLoginFailed() {
+        Toast.makeText(applicationContext, "Authentication Failed", Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("MissingSuperCall")
