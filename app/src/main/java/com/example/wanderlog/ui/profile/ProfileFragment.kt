@@ -33,9 +33,10 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textProfile
         ProfileViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+            binding.username.text = "@${it.username}"
+            binding.fullname.text = it.fullname
+            binding.bio.text = it.bio
         }
 
         binding.logout.setOnClickListener{
