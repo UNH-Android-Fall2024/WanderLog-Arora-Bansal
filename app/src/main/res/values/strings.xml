@@ -6,4 +6,7 @@
     <string name="bucket_list">Bucket List</string>
     <string name="title_camera">Camera</string>
     <string name="title_profile">Profile</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="start_capture">Start Capture</string>
+    <string name="stop_capture">Stop Capture</string>
 </resources>
