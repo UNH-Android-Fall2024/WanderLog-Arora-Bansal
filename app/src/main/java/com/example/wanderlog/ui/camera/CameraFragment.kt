@@ -119,6 +119,8 @@ class CameraFragment : Fragment() {
             CameraSelector.DEFAULT_FRONT_CAMERA
         else
             CameraSelector.DEFAULT_BACK_CAMERA
+
+        startCamera()
     }
 
 //    // check if gallery permission is granted
