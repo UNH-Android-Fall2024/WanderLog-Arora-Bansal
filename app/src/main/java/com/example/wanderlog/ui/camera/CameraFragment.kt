@@ -52,18 +52,16 @@ class CameraFragment : Fragment() {
         viewBinding = FragmentCameraBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize the permission launcher
         permissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
-                // If the permission granted, open the gallery
-                //openGallery()
+                openGallery() // If permission is granted, open the gallery
             } else {
-                // Permission denied
                 Toast.makeText(requireContext(), "Gallery permission denied", Toast.LENGTH_SHORT).show()
             }
         }
@@ -88,7 +86,7 @@ class CameraFragment : Fragment() {
         // Set up the listeners for take photo and other operations
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
 
-        viewBinding.imagePickerButton.setOnClickListener {}
+        viewBinding.imagePickerButton.setOnClickListener { checkGalleryPermission() }
 
         viewBinding.rotateCameraButton.setOnClickListener{ rotateCamera()}
 
@@ -123,26 +121,42 @@ class CameraFragment : Fragment() {
         startCamera()
     }
 
-//    // check if gallery permission is granted
-//    private fun checkGalleryPermission() {
-//        if (ContextCompat.checkSelfPermission(
-//                requireContext(),
-//                Manifest.permission.READ_EXTERNAL_STORAGE
-//            ) == PackageManager.PERMISSION_GRANTED
-//        ) {
-//            openGallery()
-//        } else {
-//            // Use the permission launcher to request the permission
-//            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-//        }
-//    }
+    // check if gallery permission is granted
+    private fun checkGalleryPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // For Android 13 and above
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_IMAGES
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                openGallery()
+            } else {
+                // Request permission for Android 13+
+                permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+        } else {
+            // For below Android 13
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                openGallery()
+            } else {
+                // Request permission for below Android 13
+                permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+    }
 
-    // function for Gallery
-//    private fun openGallery(){
-//        val intent = Intent(Intent.ACTION_PICK)
-//        intent.type = "image/*"
-//        galleryLauncher.launch(intent)
-//    }
+
+    // function for Gallery opening
+    private fun openGallery(){
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        galleryLauncher.launch(intent)
+    }
 
     private fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
