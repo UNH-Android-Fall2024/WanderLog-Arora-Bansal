@@ -78,19 +78,16 @@ class ProfileFragment : Fragment() {
         }
 
         // Add the map view to the activity (you can also add it to other views as a child)
-
-
-        return root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?){
-        super.onViewCreated(view, savedInstanceState)
-
         binding.editProfile.setOnClickListener {
             findNavController().navigate(R.id.action_navigation_profile_to_editProfileNavigation)
         }
-    }
 
+        binding.showPhotos.setOnClickListener {
+            findNavController().navigate(R.id.action_navigation_profile_to_showPhotosNavigation)
+        }
+
+        return root
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

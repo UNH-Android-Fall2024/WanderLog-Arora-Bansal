@@ -164,10 +164,10 @@ class SignupActivity : AppCompatActivity() {
             "username" to username,
         )
         // Add a new document with a generated ID
-        db.collection("users")
-            .add(submit)
+        db.collection("users").document(uid)
+            .set(submit)
             .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                Log.d(TAG, "DocumentSnapshot added with ID: $uid")
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "Error adding document", e)

@@ -1,5 +1,6 @@
 package com.example.wanderlog.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,36 +10,76 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
-import com.example.wanderlog.R.*
 import com.example.wanderlog.dataModel.User
-import com.example.wanderlog.databinding.ActivityMainBinding
 import com.example.wanderlog.databinding.FragmentEditProfileBinding
+import com.example.wanderlog.ui.login.ForgotPasswordActivity
+import com.example.wanderlog.ui.login.LoginActivity
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.firestore
+
 
 class EditProfileFragment : Fragment() {
-    private lateinit var binding: FragmentEditProfileBinding
-    private var currentUser= User()
-
+    private var _binding: FragmentEditProfileBinding? = null
+    private val binding get() = _binding!!
+    private val auth = Firebase.auth
+    private val db = Firebase.firestore
+    private lateinit var currentUser : User
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+
+        val ProfileViewModel =
+            ViewModelProvider(this).get(ProfileViewModel::class.java)
         // Inflate the layout for this fragment
-        return inflater.inflate(layout.fragment_edit_profile, container, false)
+        _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+
+        currentUser = ProfileViewModel.getCurrentUserDetails()
+        binding.username.setText(currentUser.username)
+        binding.fullname.setText(currentUser.fullname)
+        binding.bio.setText(currentUser.bio)
+        binding.email.setText(currentUser.email)
+
+        binding.resetPassword.setOnClickListener{
+            Log.d("Reset Password", currentUser.email)
+            val myIntent = Intent(
+                activity,
+                ForgotPasswordActivity::class.java
+            )
+            startActivity(myIntent)
+        }
+
+        binding.submit.setOnClickListener{
+            if (binding.fullname.text.toString() != currentUser.fullname ||
+                binding.bio.text.toString() != currentUser.bio){
+                storeUserData(currentUser.FirebaseAuthID,binding.fullname.text.toString(), binding.bio.text.toString())
+            }
+
+            findNavController().navigate(R.id.action_editProfileNavigation_to_navigation_profile)
+        }
+
+        binding.logout.setOnClickListener{
+            auth.signOut()
+            val myIntent = Intent(
+                activity,
+                LoginActivity::class.java
+            )
+            startActivity(myIntent)
+        }
+
+
+        return root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val profileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
-        binding = FragmentEditProfileBinding.inflate(layoutInflater)
-
-        currentUser = profileViewModel.getCurrentUserDetails()
-//         {
-//            Log.d("editProfileSubmit", "Button clicked")
-//            findNavController().navigate(R.id.action_navigation_profile_to_editProfileNavigation)
-//         }
-
-
+    private fun storeUserData(uid: String, name: String, bio:String ){
+        val submit = hashMapOf(
+            "bio" to bio,
+            "fullname" to name,
+        )
+        db.collection("users").document(uid).set(submit, SetOptions.merge())
     }
 
 

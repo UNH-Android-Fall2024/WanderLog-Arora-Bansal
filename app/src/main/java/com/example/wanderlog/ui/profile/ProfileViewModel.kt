@@ -7,6 +7,7 @@ import com.example.wanderlog.dataModel.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 
 class ProfileViewModel : ViewModel() {
     private var auth = Firebase.auth
@@ -23,11 +24,9 @@ class ProfileViewModel : ViewModel() {
     val text: LiveData<User> = details
     fun getCurrentUserDetails():User{
         var user=User()
-        db.collection("users").whereEqualTo("FirebaseAuthID",auth.currentUser!!.uid).get()
-            .addOnSuccessListener {result ->
-                for( document in result){
-                    user = document.toObject(User::class.java)
-                }
+        db.collection("users").document(auth.currentUser!!.uid).get()
+            .addOnSuccessListener {documentSnapshot ->
+                    user = documentSnapshot.toObject<User>()!!
             }
         return user
     }
