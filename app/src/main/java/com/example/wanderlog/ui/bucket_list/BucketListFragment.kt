@@ -22,14 +22,14 @@ class BucketListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel =
+        val bucketListViewModel =
             ViewModelProvider(this).get(BucketListViewModel::class.java)
 
         _binding = FragmentBucketListBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textBucketList
-        dashboardViewModel.text.observe(viewLifecycleOwner) {
+        bucketListViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root

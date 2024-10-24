@@ -9,7 +9,11 @@
         android:id="@+id/navigation_home"
         android:name="com.example.wanderlog.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_searchNavigation"
+            app:destination="@id/searchNavigation" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_bucket_list"
@@ -27,5 +31,53 @@
         android:id="@+id/navigation_profile"
         android:name="com.example.wanderlog.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+
+        <action
+            android:id="@+id/action_navigation_profile_to_editProfileNavigation"
+            app:destination="@id/editProfileNavigation"
+           />
+        <action
+            android:id="@+id/action_navigation_profile_to_showPhotosNavigation"
+            app:destination="@id/showPhotosNavigation" />
+
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/editProfileNavigation"
+        android:name="com.example.wanderlog.ui.profile.EditProfileFragment"
+        android:label="EditProfileFragment"
+        tools:layout="@layout/fragment_edit_profile">
+        <action
+            android:id="@+id/action_editProfileNavigation_to_navigation_profile"
+            app:destination="@id/navigation_profile"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/showPhotosNavigation"
+        android:name="com.example.wanderlog.ui.profile.PhotoGalleryFragment"
+        android:label="PhotoGalleryFragment"
+        tools:layout="@layout/fragment_photo_gallery">
+
+
+        <action
+            android:id="@+id/action_showPhotosNavigation_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchNavigation"
+        android:name="com.example.wanderlog.ui.home.SearchFragment"
+        android:label="SearchViewFragment"
+        tools:layout="@layout/fragment_search_list">
+
+
+
+    </fragment>
+
+
+
+
 </navigation>

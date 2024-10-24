@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "174630504860",
+    "project_id": "wanderlog-s24-c3f37",
+    "storage_bucket": "wanderlog-s24-c3f37.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174630504860:android:3de2b083201dec76c72059",
+        "android_client_info": {
+          "package_name": "com.example.wanderlog"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFTQh-FGAysylCOFZlRA7pS_lsxqQwFK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
