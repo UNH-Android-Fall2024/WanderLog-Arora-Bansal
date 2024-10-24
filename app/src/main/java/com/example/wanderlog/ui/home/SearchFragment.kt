@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import com.example.wanderlog.dataModel.User
 import com.example.wanderlog.dataModel.UserAdapter
 import com.example.wanderlog.dataModel.UserCard
@@ -15,6 +16,7 @@ import com.example.wanderlog.databinding.FragmentSearchListBinding
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
+import java.util.Locale
 
 /**
  * A fragment representing a list of Items.
@@ -29,6 +31,9 @@ class SearchFragment : Fragment() {
     private var db = Firebase.firestore
     private lateinit var mRecyclerView: RecyclerView
     val UserList: ArrayList<UserCard> = ArrayList()
+    private lateinit var searchView: SearchView
+    private lateinit var adapter: UserAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,26 +51,56 @@ class SearchFragment : Fragment() {
                 for (document in result){
                     val user = document.toObject<User>()
                     UserList.add(
-                        UserCard(user.profilePicture, user.fullname, user.username)
+                        UserCard(user.profilePicture, user.fullname, user.username, user.FirebaseAuthID)
                     )
                 }
                 Log.d("gotusers","$UserList")
 
             }
+//        adapter = UserAdapter(UserList, this)
+        mRecyclerView = binding.recyclerViewUser
+        searchView = binding.searchBar
+        mRecyclerView.setHasFixedSize(true)
+        mRecyclerView.layoutManager = LinearLayoutManager(context)
+        mRecyclerView.adapter = UserAdapter(UserList, this)
+        adapter = mRecyclerView.adapter as UserAdapter
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterList(newText)
+                return true
+            }
+
+        })
 
 
 
 
         return root
     }
+    private fun filterList(query: String?) {
 
+        if (query != null) {
+            val filteredList = ArrayList<UserCard>()
+            for (i in UserList) {
+                if (i.fullname.lowercase(Locale.ROOT).contains(query)) {
+                    filteredList.add(i)
+                }
+            }
+
+            if (filteredList.isEmpty()) {
+//                Toast.makeText(this, "No Data found", Toast.LENGTH_SHORT).show()
+            } else {
+                adapter.setFilteredList(filteredList)
+            }
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
-        mRecyclerView = binding.recyclerViewUser
-        mRecyclerView.setHasFixedSize(true)
-        mRecyclerView.layoutManager = LinearLayoutManager(context)
-        mRecyclerView.adapter = UserAdapter(UserList, this)
-
     }
 
 
