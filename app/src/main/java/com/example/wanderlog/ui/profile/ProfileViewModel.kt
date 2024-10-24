@@ -13,11 +13,9 @@ class ProfileViewModel : ViewModel() {
     private var auth = Firebase.auth
     private var db = Firebase.firestore
     private val details = MutableLiveData<User>().apply {
-        db.collection("users").whereEqualTo("FirebaseAuthID",auth.currentUser!!.uid).get()
-            .addOnSuccessListener {result ->
-                for( document in result){
-                    value = document.toObject(User::class.java)
-                }
+        db.collection("users").document(auth.currentUser!!.uid).get()
+            .addOnSuccessListener {documentSnapshot ->
+                    value = documentSnapshot.toObject<User>()
             }
     }
 
