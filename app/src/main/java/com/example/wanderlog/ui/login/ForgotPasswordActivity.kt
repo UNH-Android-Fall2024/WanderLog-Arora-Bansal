@@ -31,6 +31,9 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
                     }
                 }
+            if(auth.currentUser!=null){
+                auth.signOut()
+            }
             val myIntent = Intent(
                 this@ForgotPasswordActivity,
                 LoginActivity::class.java

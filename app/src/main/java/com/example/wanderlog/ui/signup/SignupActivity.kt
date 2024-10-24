@@ -6,8 +6,10 @@ import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.wanderlog.dataModel.User
 import com.example.wanderlog.databinding.ActivitySignupBinding
 import com.example.wanderlog.ui.login.LoginActivity
+import com.example.wanderlog.ui.login.afterTextChanged
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -19,6 +21,8 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val db = FirebaseFirestore.getInstance()
     private lateinit var binding: ActivitySignupBinding
+    private var userList: MutableList<User>? = arrayListOf()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +35,7 @@ class SignupActivity : AppCompatActivity() {
         val login = binding.signup
         val loading = binding.loading
         val signin = binding.signin
-
+        userList = mutableListOf()
         signin.setOnClickListener{
 
             val myIntent = Intent(
@@ -43,6 +47,16 @@ class SignupActivity : AppCompatActivity() {
 
         login.setOnClickListener {
             Log.d("createUser","Continue clicked")
+            db.collection("users").whereEqualTo("username", binding.usernameId.text.toString())
+                .get()
+                .addOnSuccessListener { result ->
+
+                    for (document in result) {
+                        val user = document.toObject(User::class.java)
+                        userList!!.add(user)
+                    }
+                }
+
             loading.visibility = View.VISIBLE
             createAccount(email.text.toString(), password.text.toString())
         }
@@ -64,25 +78,34 @@ class SignupActivity : AppCompatActivity() {
         val cpass = binding.confirmpassword.text.toString()
         val email = binding.email.text.toString()
         val name = binding.fullname.text.toString()
-        val bool = pass == cpass
-        if (name != "" && email != "" && pass != "" && cpass != "") {
-            Log.d(/* tag = */ "Signup1",/* msg = */ "$bool")
-            if (pass == cpass) {
-                if (pass.length > 5) {
-                    if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        return true
+        val username = binding.usernameId.text.toString()
+
+        Log.d("username","$userList")
+
+        if (name != "" && email != "" && pass != "" && cpass != "" && username!="") {
+            if (userList!!.size == 0 ) {
+                if (pass == cpass) {
+                    if (pass.length > 5) {
+                        if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                            return true
+                        } else {
+                            binding.failed.text = "The email is incorrect!"
+                            binding.failed.visibility = View.VISIBLE
+                            return false
+                        }
                     } else {
-                        binding.failed.text = "The email is incorrect!"
+                        binding.failed.text = "The password must be atleast 6 characters long!"
                         binding.failed.visibility = View.VISIBLE
                         return false
                     }
                 } else {
-                    binding.failed.text = "The password must be atleast 6 characters long!"
+                    binding.failed.text = "Passwords do not match!"
                     binding.failed.visibility = View.VISIBLE
                     return false
                 }
-            } else {
-                binding.failed.text = "Passwords do not match!"
+            }
+            else{
+                binding.failed.text = "This username already exists. Please choose a new one."
                 binding.failed.visibility = View.VISIBLE
                 return false
             }
@@ -95,9 +118,6 @@ class SignupActivity : AppCompatActivity() {
     }
     private fun createAccount(email: String, password: String) {
         // [START create_user_with_email]
-
-
-
         if (verifyEnteredDetails()) {
             Log.d("Signup1", "Success?" )
             auth.createUserWithEmailAndPassword(email, password)
@@ -109,9 +129,10 @@ class SignupActivity : AppCompatActivity() {
                         user?.let {
                             // Name, email address, and profile photo Url
                             val name = binding.fullname.text.toString()
+                            val username = binding.usernameId.text.toString()
                             val uid = it.uid
-                            Log.d("UserDetails", "$name $email $uid")
-                            storeUserData(uid, name, email)
+                            Log.d("UserDetails", "$name $email $uid $username")
+                            storeUserData(uid, name, email, username)
                         }
                         updateUI(user)
                     } else {
@@ -132,7 +153,7 @@ class SignupActivity : AppCompatActivity() {
         // [END create_user_with_email]
     }
 
-    private fun storeUserData(uid: String, name: String, email: String ){
+    private fun storeUserData(uid: String, name: String, email: String, username:String ){
 
         val submit = hashMapOf(
             "bio" to "",
@@ -140,12 +161,13 @@ class SignupActivity : AppCompatActivity() {
             "fullname" to name,
             "profilePicture" to "",
             "FirebaseAuthID" to uid,
+            "username" to username,
         )
         // Add a new document with a generated ID
-        db.collection("users")
-            .add(submit)
+        db.collection("users").document(uid)
+            .set(submit)
             .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                Log.d(TAG, "DocumentSnapshot added with ID: $uid")
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "Error adding document", e)
