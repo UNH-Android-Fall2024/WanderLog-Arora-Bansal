@@ -14,6 +14,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.camera.core.ImageCapture
 import android.widget.Toast
@@ -34,6 +35,7 @@ typealias LumaListener = (luma: Double) -> Unit
 class CameraFragment : Fragment() {
 
     private lateinit var viewBinding: FragmentCameraBinding
+    private var savedImageUri: Uri? = null
 
     private var imageCapture: ImageCapture? = null
 
@@ -113,10 +115,10 @@ class CameraFragment : Fragment() {
         }
 
     private fun rotateCamera(){
-        cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
-            CameraSelector.DEFAULT_FRONT_CAMERA
+        if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
+            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
         else
-            CameraSelector.DEFAULT_BACK_CAMERA
+            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
         startCamera()
     }
@@ -191,7 +193,8 @@ class CameraFragment : Fragment() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults){
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
+                    savedImageUri = output.savedUri // Save the image URI here
+                    val msg = "Photo capture succeeded: $savedImageUri"
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show() // Use requireContext()
                     Log.d(TAG, msg)
                 }
@@ -217,7 +220,7 @@ class CameraFragment : Fragment() {
                 .build()
 
             // Select back camera as a default
-            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            //cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
             try {
                 // Unbind use cases before rebinding
