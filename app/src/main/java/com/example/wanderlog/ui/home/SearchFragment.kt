@@ -1,5 +1,6 @@
 package com.example.wanderlog.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import java.util.Locale
+import com.example.wanderlog.dataModel.UserList
 
 /**
  * A fragment representing a list of Items.
@@ -30,7 +32,7 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private var db = Firebase.firestore
     private lateinit var mRecyclerView: RecyclerView
-    val UserList: ArrayList<UserCard> = ArrayList()
+
     private lateinit var searchView: SearchView
     private lateinit var adapter: UserAdapter
 
@@ -45,8 +47,8 @@ class SearchFragment : Fragment() {
         val root: View = binding.root
 
 
-
-        db.collection("users").get()
+        UserList.clear()
+        db.collection("users").whereNotEqualTo("FirebaseAuthID","").get()
             .addOnSuccessListener { result ->
                 for (document in result){
                     val user = document.toObject<User>()
@@ -57,7 +59,8 @@ class SearchFragment : Fragment() {
                 Log.d("gotusers","$UserList")
 
             }
-//        adapter = UserAdapter(UserList, this)
+
+
         mRecyclerView = binding.recyclerViewUser
         searchView = binding.searchBar
         mRecyclerView.setHasFixedSize(true)
@@ -76,8 +79,6 @@ class SearchFragment : Fragment() {
             }
 
         })
-
-
 
 
         return root

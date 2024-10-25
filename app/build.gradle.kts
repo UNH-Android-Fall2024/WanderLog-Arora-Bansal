@@ -42,6 +42,7 @@ android {
 
 
 dependencies {
+    implementation(libs.androidx.fragment.ktx)
     val cameraxVersion = "1.2.2"
     implementation("androidx.camera:camera-core:$cameraxVersion")
     implementation("androidx.camera:camera-camera2:$cameraxVersion")

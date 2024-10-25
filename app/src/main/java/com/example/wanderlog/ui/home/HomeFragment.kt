@@ -1,20 +1,20 @@
 package com.example.wanderlog.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
-import com.example.wanderlog.dataModel.User
-import com.example.wanderlog.dataModel.UserCard
+import com.example.wanderlog.dataModel.Post
+import com.example.wanderlog.dataModel.PostAdapter
 import com.example.wanderlog.databinding.FragmentHomeBinding
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
+import com.google.firebase.auth.auth
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -22,6 +22,16 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private var auth = Firebase.auth
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var postAdapter: PostAdapter
+
+    private val postList = listOf(
+        Post(auth.currentUser!!.uid, "user1"),
+        Post(auth.currentUser!!.uid, "user2"),
+        // Add more Post items
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +49,16 @@ class HomeFragment : Fragment() {
         }
 
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize RecyclerView
+        recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        postAdapter = PostAdapter(requireContext(), postList)
+        recyclerView.adapter = postAdapter
     }
 
     override fun onDestroyView() {

@@ -7,13 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.Navigation
+import androidx.navigation.Navigator
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
 import com.example.wanderlog.ui.home.SearchFragment
+import com.example.wanderlog.ui.profile.OtherProfileViewModel
 
 class UserAdapter(
     private var mList: List<UserCard>,
-    private val context: SearchFragment
+    private val context: SearchFragment,
+
 ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,19 +37,17 @@ class UserAdapter(
         return UserViewHolder(itemView)
     }
 
-//    override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-////        holder.profilePicture.setImageResource(mList[position].profilePicture)
-//        holder.username.text = mList[position].username
-//        holder.username.text = mList[position].fullname
-//
-//    }
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        val(imageResource, text1, text2) = mList[position]
+        val(imageResource, text1, text2, text3) = mList[position]
         holder.username.text = text1
         holder.fullname.text = text2
-        //holder.mImageView.setImageResource(imageResource)
+//        holder.uid.text = text3
+//        holder.mImageView.setImageResource(imageResource)
         holder.itemView.setOnClickListener {
-            Log.d("MYTEST","Position $position")
+            Log.d("MYTEST", text3)
+
+            Navigation.createNavigateOnClickListener(R.id.action_searchNavigation_to_otherUserProfile)
+                .onClick(holder.username)
         }
 
     }
@@ -53,4 +55,5 @@ class UserAdapter(
     override fun getItemCount(): Int {
         return mList.size
     }
+
 }

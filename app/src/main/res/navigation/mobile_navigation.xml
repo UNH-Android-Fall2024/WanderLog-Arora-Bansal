@@ -74,6 +74,18 @@
         tools:layout="@layout/fragment_search_list">
 
 
+        <action
+            android:id="@+id/action_searchNavigation_to_otherUserProfile"
+            app:destination="@id/otherUserProfile" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/otherUserProfile"
+        android:name="com.example.wanderlog.ui.profile.OtherProfileFragment"
+        android:label="OtherUserProfile"
+        tools:layout="@layout/fragment_other_profilefragment">
+
+
 
     </fragment>
 
