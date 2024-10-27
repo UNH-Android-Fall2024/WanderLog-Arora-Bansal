@@ -14,44 +14,15 @@ class ProfileViewModel : ViewModel() {
     private var db = Firebase.firestore
     private val details = MutableLiveData<User>().apply {
         db.collection("users").document(auth.currentUser!!.uid).get()
-            .addOnSuccessListener {documentSnapshot ->
-                    value = documentSnapshot.toObject<User>()
+            .addOnSuccessListener { documentSnapshot ->
+                value = documentSnapshot.toObject<User>()
             }
     }
 
     val text: LiveData<User> = details
 
-    fun getPostCount(): Int{
-        var count = 0
-        db.collection("posts").whereEqualTo("userID",auth.currentUser!!.uid).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    count++
-                }
-            }
-        return count
-    }
 
-    fun getFollowerCount(): Int{
-        var count = 0
-        db.collection("connections").whereEqualTo("userID1",auth.currentUser!!.uid).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    count++
-                }
-            }
-        return count
-    }
 
-    fun getFollowingCount(): Int{
-        var count = 0
-        db.collection("connections").whereEqualTo("userID2",auth.currentUser!!.uid).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    count++
-                }
-            }
-        return count
-    }
+
 
 }

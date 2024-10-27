@@ -12,7 +12,7 @@ import com.example.wanderlog.R
 
 class PostAdapter(
     private val context: Context,
-    private val postList: List<Post>
+    private val postList: ArrayList<Post>,
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -20,7 +20,11 @@ class PostAdapter(
         val usernameTextView: TextView = itemView.findViewById(R.id.username)
         val postImageView: ImageView = itemView.findViewById(R.id.postImage)
         val likesTextView: TextView = itemView.findViewById(R.id.likeCount)
-//        val commentsTextView: TextView = itemView.findViewById(R.id.viewComments)
+        val commentsTextView: TextView = itemView.findViewById(R.id.viewComments)
+        val caption: TextView = itemView.findViewById(R.id.postDescription)
+
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {

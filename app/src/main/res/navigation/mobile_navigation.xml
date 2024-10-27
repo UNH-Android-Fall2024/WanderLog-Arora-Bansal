@@ -63,8 +63,8 @@
 
 
         <action
-            android:id="@+id/action_showPhotosNavigation_to_navigation_profile"
-            app:destination="@id/navigation_profile" />
+            android:id="@+id/action_showPhotosNavigation_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
     </fragment>
 
     <fragment
@@ -72,7 +72,9 @@
         android:name="com.example.wanderlog.ui.home.SearchFragment"
         android:label="SearchViewFragment"
         tools:layout="@layout/fragment_search_list">
-
+        <argument
+            android:name="userID"
+            app:argType="string"/>
 
         <action
             android:id="@+id/action_searchNavigation_to_otherUserProfile"
@@ -88,6 +90,29 @@
 
 
     </fragment>
+
+    <fragment
+        android:id="@+id/postDetailFragment"
+        android:name="com.example.wanderlog.ui.home.PostDetailFragment"
+        tools:layout="@layout/fragment_post_detail">
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <argument
+            android:name="postImageResId"
+            app:argType="integer" />
+        <argument
+            android:name="likes"
+            app:argType="string" />
+        <argument
+            android:name="comments"
+            app:argType="string" />
+    </fragment>
+
+
+
+
+
 
 
 

@@ -28,9 +28,9 @@ class OtherProfileFragment : Fragment() {
 
     private var _binding: FragmentOtherProfilefragmentBinding? = null
     private val binding get() = _binding!!
-    private var postCount by Delegates.notNull<Int>()
-    private var followerCount by Delegates.notNull<Int>()
-    private var followingCount by Delegates.notNull<Int>()
+//    private var postCount by Delegates.notNull<Int>()
+//    private var followerCount by Delegates.notNull<Int>()
+//    private var followingCount by Delegates.notNull<Int>()
     private lateinit var mapView: MapView
     private companion object {
         private const val ZOOM = 0.45
@@ -53,12 +53,12 @@ class OtherProfileFragment : Fragment() {
             binding.fullname.text = it.fullname
             binding.bio.text = it.bio
         }
-        postCount = ProfileViewModel.getPostCount()
-        followerCount = ProfileViewModel.getFollowerCount()
-        followingCount = ProfileViewModel.getFollowingCount()
-        binding.postCount.text = "$postCount\nPosts"
-        binding.followerCount.text = "$followerCount\nFollowers"
-        binding.followingCount.text = "$followingCount\nFollowing"
+//        postCount = ProfileViewModel.getPostCount()
+//        followerCount = ProfileViewModel.getFollowerCount()
+//        followingCount = ProfileViewModel.getFollowingCount()
+//        binding.postCount.text = "$postCount\nPosts"
+//        binding.followerCount.text = "$followerCount\nFollowers"
+//        binding.followingCount.text = "$followingCount\nFollowing"
 
 
         // Create a map programmatically and set the initial camera

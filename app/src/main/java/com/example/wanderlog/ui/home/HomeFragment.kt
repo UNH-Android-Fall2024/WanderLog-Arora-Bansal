@@ -27,7 +27,7 @@ class HomeFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var postAdapter: PostAdapter
 
-    private val postList = listOf(
+    private val postList = arrayListOf(
         Post(auth.currentUser!!.uid, "user1"),
         Post(auth.currentUser!!.uid, "user2"),
         // Add more Post items
@@ -57,9 +57,11 @@ class HomeFragment : Fragment() {
         // Initialize RecyclerView
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
         postAdapter = PostAdapter(requireContext(), postList)
         recyclerView.adapter = postAdapter
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

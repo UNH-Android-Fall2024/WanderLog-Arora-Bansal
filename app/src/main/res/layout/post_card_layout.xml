@@ -71,6 +71,10 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
         <!-- Likes count and post description -->
         <TextView
             android:id="@+id/likeCount"
@@ -80,6 +84,15 @@
             android:textStyle="bold"
             android:paddingStart="8dp"
             android:paddingEnd="8dp" />
+        <TextView
+            android:id="@+id/viewComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 comments"
+            android:textStyle="bold"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/postDescription"
@@ -91,16 +104,7 @@
             android:layout_marginTop="4dp" />
 
         <!-- View all comments link -->
-        <TextView
-            android:id="@+id/viewComments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="View all comments"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:textColor="#888888"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="8dp" />
+
 
     </LinearLayout>
 

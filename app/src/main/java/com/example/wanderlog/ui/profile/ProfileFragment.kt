@@ -12,6 +12,7 @@ import com.example.wanderlog.R
 import com.example.wanderlog.databinding.FragmentProfileBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
@@ -27,9 +28,8 @@ class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-    private var postCount by Delegates.notNull<Int>()
-    private var followerCount by Delegates.notNull<Int>()
-    private var followingCount by Delegates.notNull<Int>()
+    private var db = Firebase.firestore
+    private var auth = Firebase.auth
     private lateinit var mapView: MapView
     private companion object {
         private const val ZOOM = 0.45
@@ -51,14 +51,11 @@ class ProfileFragment : Fragment() {
             binding.username.text = "@${it.username}"
             binding.fullname.text = it.fullname
             binding.bio.text = it.bio
-        }
-        postCount = ProfileViewModel.getPostCount()
-        followerCount = ProfileViewModel.getFollowerCount()
-        followingCount = ProfileViewModel.getFollowingCount()
-        binding.postCount.text = "$postCount\nPosts"
-        binding.followerCount.text = "$followerCount\nFollowers"
-        binding.followingCount.text = "$followingCount\nFollowing"
 
+        }
+        getPostCount()
+        getFollowerCount()
+        getFollowingCount()
 
         // Create a map programmatically and set the initial camera
         mapView = binding.mapView
@@ -94,6 +91,39 @@ class ProfileFragment : Fragment() {
         _binding = null
     }
 
+    fun getPostCount(){
+        var count = 0
+        db.collection("posts").whereEqualTo("userID",auth.currentUser!!.uid).get()
+            .addOnSuccessListener { result ->
+
+                for (document in result) {
+                    count++
+                }
+                binding.postCount.text = "$count\nPosts"
+            }
+    }
+
+    fun getFollowerCount(){
+        var count = 0
+        db.collection("connections").whereEqualTo("userID1",auth.currentUser!!.uid).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    count++
+                }
+                binding.followerCount.text = "$count\nFollowers"
+            }
+    }
+
+    fun getFollowingCount(){
+        var count = 0
+        db.collection("connections").whereEqualTo("userID2",auth.currentUser!!.uid).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    count++
+                }
+                binding.followingCount.text = "$count\nFollowing"
+            }
+    }
 
 
 
