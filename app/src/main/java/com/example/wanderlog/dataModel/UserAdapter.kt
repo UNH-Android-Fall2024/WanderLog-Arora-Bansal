@@ -1,6 +1,8 @@
 package com.example.wanderlog.dataModel
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,16 +10,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.Navigation
-import androidx.navigation.Navigator
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
-import com.example.wanderlog.ui.home.SearchFragment
-import com.example.wanderlog.ui.profile.OtherProfileViewModel
+
 
 class UserAdapter(
     private var mList: List<UserCard>,
-    private val context: SearchFragment,
-
+    private val context: Context,
 ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -41,12 +40,15 @@ class UserAdapter(
         val(imageResource, text1, text2, text3) = mList[position]
         holder.username.text = text1
         holder.fullname.text = text2
+        val bundle = Bundle().apply {
+            putString("userID", text3)
+        }
 //        holder.uid.text = text3
 //        holder.mImageView.setImageResource(imageResource)
         holder.itemView.setOnClickListener {
             Log.d("MYTEST", text3)
 
-            Navigation.createNavigateOnClickListener(R.id.action_searchNavigation_to_otherUserProfile)
+            Navigation.createNavigateOnClickListener(R.id.action_searchNavigation_to_otherUserProfile, bundle)
                 .onClick(holder.username)
         }
 

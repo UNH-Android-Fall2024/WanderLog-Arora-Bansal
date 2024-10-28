@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.wanderlog.R
-import com.example.wanderlog.dataModel.Photo
 import com.example.wanderlog.dataModel.PhotoGridAdapter
 import com.example.wanderlog.dataModel.Post
 import com.example.wanderlog.dataModel.User

@@ -2,17 +2,18 @@ package com.example.wanderlog.ui.profile
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
+import com.example.wanderlog.dataModel.User
 import com.example.wanderlog.databinding.FragmentOtherProfilefragmentBinding
-import com.example.wanderlog.databinding.FragmentProfileBinding
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
@@ -21,16 +22,14 @@ import com.mapbox.maps.extension.style.atmosphere.generated.atmosphere
 import com.mapbox.maps.extension.style.layers.properties.generated.ProjectionName
 import com.mapbox.maps.extension.style.projection.generated.projection
 import com.mapbox.maps.extension.style.style
-import kotlin.properties.Delegates
 
 
 class OtherProfileFragment : Fragment() {
 
     private var _binding: FragmentOtherProfilefragmentBinding? = null
     private val binding get() = _binding!!
-//    private var postCount by Delegates.notNull<Int>()
-//    private var followerCount by Delegates.notNull<Int>()
-//    private var followingCount by Delegates.notNull<Int>()
+    private var userID = ""
+    private var db = Firebase.firestore
     private lateinit var mapView: MapView
     private companion object {
         private const val ZOOM = 0.45
@@ -42,24 +41,9 @@ class OtherProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val ProfileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
 
         _binding = FragmentOtherProfilefragmentBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        ProfileViewModel.text.observe(viewLifecycleOwner) {
-            binding.username.text = "@${it.username}"
-            binding.fullname.text = it.fullname
-            binding.bio.text = it.bio
-        }
-//        postCount = ProfileViewModel.getPostCount()
-//        followerCount = ProfileViewModel.getFollowerCount()
-//        followingCount = ProfileViewModel.getFollowingCount()
-//        binding.postCount.text = "$postCount\nPosts"
-//        binding.followerCount.text = "$followerCount\nFollowers"
-//        binding.followingCount.text = "$followingCount\nFollowing"
-
 
         // Create a map programmatically and set the initial camera
         mapView = binding.mapView
@@ -85,11 +69,68 @@ class OtherProfileFragment : Fragment() {
         return root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        userID = arguments?.getString("userID").toString()
+        Log.d("navigate",userID)
+
+        getUserDetails()
+        getPostCount()
+        getFollowerCount()
+        getFollowingCount()
+    }
+
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+
+    private fun getUserDetails(){
+        db.collection("users").document(userID).get()
+            .addOnSuccessListener { documentSnapshot ->
+                val user = documentSnapshot.toObject<User>()!!
+                "@${user.username}".also { binding.username.text = it }
+                binding.fullname.text = user.fullname
+                binding.bio.text = user.bio
+            }
+
+    }
+    private fun getPostCount(){
+        var count = 0
+        db.collection("posts").whereEqualTo("userID",userID).get()
+            .addOnSuccessListener { result ->
+
+                for (document in result) {
+                    count++
+                }
+                "$count\nPosts".also { binding.postCount.text = it }
+            }
+    }
+
+    private fun getFollowerCount(){
+        var count = 0
+        db.collection("connections").whereEqualTo("userID1",userID).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    count++
+                }
+                "$count\nFollowers".also { binding.followerCount.text = it }
+            }
+    }
+
+    private fun getFollowingCount(){
+        var count = 0
+        db.collection("connections").whereEqualTo("userID2",userID).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    count++
+                }
+                "$count\nFollowing".also { binding.followingCount.text = it }
+            }
+    }
 
 
 

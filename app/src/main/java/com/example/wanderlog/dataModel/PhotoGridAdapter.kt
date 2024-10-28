@@ -9,9 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.wanderlog.R
 
-// Sample Photo data class (if your data has more fields, you can add them here)
-data class Photo(val imageResId: Int)
-
 // Adapter for the photo grid
 class PhotoGridAdapter(
     private val context: Context,

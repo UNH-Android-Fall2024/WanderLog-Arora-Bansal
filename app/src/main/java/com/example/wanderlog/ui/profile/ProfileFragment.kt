@@ -6,13 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
+import com.example.wanderlog.dataModel.User
 import com.example.wanderlog.databinding.FragmentProfileBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
@@ -41,18 +42,9 @@ class ProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val ProfileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
-
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        ProfileViewModel.text.observe(viewLifecycleOwner) {
-            binding.username.text = "@${it.username}"
-            binding.fullname.text = it.fullname
-            binding.bio.text = it.bio
-
-        }
+        getUserDetails()
         getPostCount()
         getFollowerCount()
         getFollowingCount()
@@ -90,8 +82,17 @@ class ProfileFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    fun getUserDetails(){
+        db.collection("users").document(auth.currentUser!!.uid).get()
+            .addOnSuccessListener { documentSnapshot ->
+                val user = documentSnapshot.toObject<User>()!!
+                "@${user.username}".also { binding.username.text = it }
+                binding.fullname.text = user.fullname
+                binding.bio.text = user.bio
+            }
 
-    fun getPostCount(){
+    }
+    private fun getPostCount(){
         var count = 0
         db.collection("posts").whereEqualTo("userID",auth.currentUser!!.uid).get()
             .addOnSuccessListener { result ->
@@ -99,29 +100,29 @@ class ProfileFragment : Fragment() {
                 for (document in result) {
                     count++
                 }
-                binding.postCount.text = "$count\nPosts"
+                "$count\nPosts".also { binding.postCount.text = it }
             }
     }
 
-    fun getFollowerCount(){
+    private fun getFollowerCount(){
         var count = 0
         db.collection("connections").whereEqualTo("userID1",auth.currentUser!!.uid).get()
             .addOnSuccessListener { result ->
                 for (document in result) {
                     count++
                 }
-                binding.followerCount.text = "$count\nFollowers"
+                "$count\nFollowers".also { binding.followerCount.text = it }
             }
     }
 
-    fun getFollowingCount(){
+    private fun getFollowingCount(){
         var count = 0
         db.collection("connections").whereEqualTo("userID2",auth.currentUser!!.uid).get()
             .addOnSuccessListener { result ->
                 for (document in result) {
                     count++
                 }
-                binding.followingCount.text = "$count\nFollowing"
+                "$count\nFollowing".also { binding.followingCount.text = it }
             }
     }
 

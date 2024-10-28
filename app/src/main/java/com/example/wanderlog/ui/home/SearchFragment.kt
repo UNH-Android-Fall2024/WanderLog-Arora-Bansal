@@ -10,6 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.navigation.fragment.findNavController
+import com.example.wanderlog.R
+import com.example.wanderlog.dataModel.Post
 import com.example.wanderlog.dataModel.User
 import com.example.wanderlog.dataModel.UserAdapter
 import com.example.wanderlog.dataModel.UserCard
@@ -65,7 +68,7 @@ class SearchFragment : Fragment() {
         searchView = binding.searchBar
         mRecyclerView.setHasFixedSize(true)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
-        mRecyclerView.adapter = UserAdapter(UserList, this)
+        mRecyclerView.adapter = UserAdapter(UserList, requireContext())
         adapter = mRecyclerView.adapter as UserAdapter
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -82,6 +85,17 @@ class SearchFragment : Fragment() {
 
 
         return root
+    }
+
+    private fun navigateToOtherProfileFragment(userID: String) {
+        // Create a bundle to pass the arguments
+
+        val bundle = Bundle().apply {
+            putString("userID", userID)
+        }
+
+        // Navigate using the findNavController
+        findNavController().navigate(R.id.action_searchNavigation_to_otherUserProfile, bundle)
     }
     private fun filterList(query: String?) {
 
