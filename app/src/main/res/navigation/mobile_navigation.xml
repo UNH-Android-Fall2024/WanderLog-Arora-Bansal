@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_navigation_home_to_searchNavigation"
             app:destination="@id/searchNavigation" />
+        <action
+            android:id="@+id/action_navigation_home_to_otherUserProfile"
+            app:destination="@id/otherUserProfile" />
     </fragment>
 
     <fragment
@@ -88,7 +91,9 @@
         tools:layout="@layout/fragment_other_profilefragment">
 
 
-
+        <action
+            android:id="@+id/action_otherUserProfile_to_showPhotosNavigation"
+            app:destination="@id/showPhotosNavigation" />
     </fragment>
 
     <fragment

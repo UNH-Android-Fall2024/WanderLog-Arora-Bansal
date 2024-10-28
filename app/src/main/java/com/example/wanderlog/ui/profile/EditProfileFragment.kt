@@ -18,6 +18,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 
 
 class EditProfileFragment : Fragment() {
@@ -30,22 +31,10 @@ class EditProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        val ProfileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
         // Inflate the layout for this fragment
         _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-
-
-        ProfileViewModel.text.observe(viewLifecycleOwner) {
-            currentUser = it
-            binding.username.setText(it.username)
-            binding.fullname.setText(it.fullname)
-            binding.bio.setText(it.bio)
-            binding.email.setText(it.email)
-        }
 
         binding.resetPassword.setOnClickListener{
             Log.d("Reset Password", currentUser.email)
@@ -76,6 +65,19 @@ class EditProfileFragment : Fragment() {
 
 
         return root
+    }
+
+    fun getUserDetails(){
+        db.collection("users").document(auth.currentUser!!.uid).get()
+            .addOnSuccessListener { documentSnapshot ->
+                val user = documentSnapshot.toObject<User>()!!
+                currentUser = user
+                binding.username.setText(user.username)
+                binding.fullname.setText(user.fullname)
+                binding.bio.setText(user.bio)
+                binding.email.setText(user.email)
+            }
+
     }
 
     private fun storeUserData(uid: String, name: String, bio:String ){

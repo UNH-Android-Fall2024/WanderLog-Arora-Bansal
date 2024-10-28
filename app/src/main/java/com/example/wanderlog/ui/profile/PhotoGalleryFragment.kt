@@ -23,7 +23,7 @@ class PhotoGalleryFragment : Fragment() {
     private var _binding: FragmentPhotoGalleryBinding? = null
     private val binding get() = _binding!!
     private var db = Firebase.firestore
-    private var auth = Firebase.auth
+    private var userID = ""
     private lateinit var photoAdapter: PhotoGridAdapter
     private var photoList : ArrayList<Post> = arrayListOf()
     private var username = ""
@@ -40,7 +40,8 @@ class PhotoGalleryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        userID = arguments?.getString("userID").toString()
+        Log.d("navigate",userID)
         // Initialize RecyclerView with binding
         binding.photoGridRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         // Initialize the adapter with click listener
@@ -51,7 +52,7 @@ class PhotoGalleryFragment : Fragment() {
         }
         binding.photoGridRecyclerView.adapter = photoAdapter
 
-        db.collection("posts").whereEqualTo("userID",auth.currentUser!!.uid)
+        db.collection("posts").whereEqualTo("userID",userID)
             .get()
             .addOnSuccessListener {result ->
                 photoList.clear()
@@ -63,7 +64,7 @@ class PhotoGalleryFragment : Fragment() {
                 Log.d("ShowPhotos", photoList[0].content)
             }
 
-        db.collection("users").document(auth.currentUser!!.uid).get()
+        db.collection("users").document(userID).get()
             .addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject<User>()!!
                 username = user.username

@@ -22,8 +22,6 @@ import com.mapbox.maps.extension.style.atmosphere.generated.atmosphere
 import com.mapbox.maps.extension.style.layers.properties.generated.ProjectionName
 import com.mapbox.maps.extension.style.projection.generated.projection
 import com.mapbox.maps.extension.style.style
-import kotlin.properties.Delegates
-
 
 class ProfileFragment : Fragment() {
 
@@ -72,7 +70,10 @@ class ProfileFragment : Fragment() {
         }
 
         binding.showPhotos.setOnClickListener {
-            findNavController().navigate(R.id.action_navigation_profile_to_showPhotosNavigation)
+            val bundle = Bundle().apply {
+                putString("userID", auth.currentUser!!.uid)
+            }
+            findNavController().navigate(R.id.action_navigation_profile_to_showPhotosNavigation, bundle)
         }
 
         return root

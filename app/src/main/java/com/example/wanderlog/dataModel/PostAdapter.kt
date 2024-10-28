@@ -1,13 +1,18 @@
 package com.example.wanderlog.dataModel
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 
 
 class PostAdapter(
@@ -33,12 +38,26 @@ class PostAdapter(
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
+
+        val db = Firebase.firestore
         val post = postList[position]
+        db.collection("users").document(post.userID).get()
+            .addOnSuccessListener { documentSnapshot ->
+                val user = documentSnapshot.toObject<User>()!!
+                holder.usernameTextView.text = user.username
+            }
 //        holder.profileImageView.setImageResource(post.)
-        holder.usernameTextView.text = post.userID
 //        holder.postImageView.setImageResource(post.postImageResId)
-        holder.likesTextView.text = post.likes.count().toString()
-//        holder.commentsTextView.text = post.comments
+        holder.caption.text = post.content
+        holder.likesTextView.text = "${post.likes.count()} likes"
+        holder.commentsTextView.text ="${post.comments.count()} comments"
+        val bundle = Bundle().apply {
+            putString("userID", post.userID)
+        }
+        holder.itemView.setOnClickListener {
+            Navigation.createNavigateOnClickListener(R.id.action_navigation_home_to_otherUserProfile, bundle)
+                .onClick(holder.usernameTextView)
+        }
     }
 
     override fun getItemCount(): Int {

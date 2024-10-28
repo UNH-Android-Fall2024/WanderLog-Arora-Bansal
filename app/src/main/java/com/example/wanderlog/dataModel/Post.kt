@@ -8,3 +8,9 @@ class Post (
     val likes: ArrayList<String> = ArrayList(),
     val location: ArrayList<String> = ArrayList(),
     val imageURL: String = "")
+
+class Connection (
+    val userID1: String = "",
+    val userID2: String = "",
+
+   )

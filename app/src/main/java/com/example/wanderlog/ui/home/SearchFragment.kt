@@ -22,6 +22,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import java.util.Locale
 import com.example.wanderlog.dataModel.UserList
+import com.google.firebase.auth.auth
 
 /**
  * A fragment representing a list of Items.
@@ -35,7 +36,7 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private var db = Firebase.firestore
     private lateinit var mRecyclerView: RecyclerView
-
+    private var auth = Firebase.auth
     private lateinit var searchView: SearchView
     private lateinit var adapter: UserAdapter
 
@@ -51,7 +52,9 @@ class SearchFragment : Fragment() {
 
 
         UserList.clear()
-        db.collection("users").whereNotEqualTo("FirebaseAuthID","").get()
+        db.collection("users")
+            .whereNotEqualTo("FirebaseAuthID",auth.currentUser!!.uid)
+            .get()
             .addOnSuccessListener { result ->
                 for (document in result){
                     val user = document.toObject<User>()
@@ -87,16 +90,6 @@ class SearchFragment : Fragment() {
         return root
     }
 
-    private fun navigateToOtherProfileFragment(userID: String) {
-        // Create a bundle to pass the arguments
-
-        val bundle = Bundle().apply {
-            putString("userID", userID)
-        }
-
-        // Navigate using the findNavController
-        findNavController().navigate(R.id.action_searchNavigation_to_otherUserProfile, bundle)
-    }
     private fun filterList(query: String?) {
 
         if (query != null) {
