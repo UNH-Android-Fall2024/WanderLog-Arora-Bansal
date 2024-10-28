@@ -28,6 +28,7 @@ import java.util.Locale
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.camera.core.ImageCaptureException
+import com.example.wanderlog.R
 
 
 typealias LumaListener = (luma: Double) -> Unit
@@ -197,9 +198,22 @@ class CameraFragment : Fragment() {
                     val msg = "Photo capture succeeded: $savedImageUri"
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show() // Use requireContext()
                     Log.d(TAG, msg)
+                    navigateToAddPostFragment(savedImageUri)
                 }
             }
         )
+    }
+
+    private fun navigateToAddPostFragment(uri: Uri?) {
+        val addPostFragment = AddPostFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable("imageUri", uri)
+            }
+        }
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, addPostFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun startCamera() {
@@ -219,8 +233,6 @@ class CameraFragment : Fragment() {
             imageCapture = ImageCapture.Builder()
                 .build()
 
-            // Select back camera as a default
-            //cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
             try {
                 // Unbind use cases before rebinding
