@@ -46,10 +46,7 @@ class PhotoGalleryFragment : Fragment() {
         binding.photoGridRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         // Initialize the adapter with click listener
 
-        photoAdapter = PhotoGridAdapter(requireContext(), photoList) { post ->
-
-            navigateToPostDetailFragment(post) // Handle item click
-        }
+        photoAdapter = PhotoGridAdapter(requireContext(), photoList)
         binding.photoGridRecyclerView.adapter = photoAdapter
 
         db.collection("posts").whereEqualTo("userID",userID)
@@ -59,32 +56,13 @@ class PhotoGalleryFragment : Fragment() {
                 for (document in result){
                     val post = document.toObject<Post>()
                     photoList.add(post)
+                    Log.d("ShowPhotos", post.imageUrl)
+
                 }
                 photoAdapter.notifyDataSetChanged()
-                Log.d("ShowPhotos", photoList[0].content)
             }
 
-        db.collection("users").document(userID).get()
-            .addOnSuccessListener { documentSnapshot ->
-                val user = documentSnapshot.toObject<User>()!!
-                username = user.username
-                photoAdapter.notifyDataSetChanged()
-            }
 
-    }
-    private fun navigateToPostDetailFragment(post: Post) {
-        // Create a bundle to pass the arguments
-
-        val bundle = Bundle().apply {
-            putString("username", username)
-            putInt("postImageResId", 1)
-            putString("likes", "${post.likes.count().toString()} Likes")
-            putString("comments", "${post.comments.count().toString()} Comments")
-            putString("caption", post.content)
-        }
-
-        // Navigate using the findNavController
-        findNavController().navigate(R.id.action_showPhotosNavigation_to_postDetailFragment, bundle)
     }
     override fun onDestroyView() {
         super.onDestroyView()

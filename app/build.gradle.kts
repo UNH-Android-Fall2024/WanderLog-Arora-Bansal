@@ -71,4 +71,5 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.mapbox.maps:android:11.7.0")
+    implementation("com.google.firebase:firebase-storage")
 }

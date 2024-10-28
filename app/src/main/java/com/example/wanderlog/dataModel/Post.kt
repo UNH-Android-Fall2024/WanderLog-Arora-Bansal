@@ -7,7 +7,7 @@ class Post (
     val comments: ArrayList<HashMap<String,String>> = ArrayList(),
     val likes: ArrayList<String> = ArrayList(),
     val location: ArrayList<String> = ArrayList(),
-    val imageURL: String = "")
+    val imageUrl: String = "")
 
 class Connection (
     val userID1: String = "",

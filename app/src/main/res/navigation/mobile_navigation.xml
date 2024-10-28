@@ -104,8 +104,8 @@
             android:name="username"
             app:argType="string" />
         <argument
-            android:name="postImageResId"
-            app:argType="integer" />
+            android:name="postImageUrl"
+            app:argType="string" />
         <argument
             android:name="likes"
             app:argType="string" />

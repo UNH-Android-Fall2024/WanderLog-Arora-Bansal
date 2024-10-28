@@ -83,7 +83,7 @@ class ProfileFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    fun getUserDetails(){
+    private fun getUserDetails(){
         db.collection("users").document(auth.currentUser!!.uid).get()
             .addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject<User>()!!

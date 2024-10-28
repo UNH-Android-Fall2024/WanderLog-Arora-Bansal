@@ -1,6 +1,7 @@
 package com.example.wanderlog.dataModel
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,8 @@ import com.example.wanderlog.R
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.storage
+import java.io.File
 
 
 class PostAdapter(
@@ -38,7 +41,7 @@ class PostAdapter(
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-
+        val storage = Firebase.storage
         val db = Firebase.firestore
         val post = postList[position]
         db.collection("users").document(post.userID).get()
@@ -46,6 +49,18 @@ class PostAdapter(
                 val user = documentSnapshot.toObject<User>()!!
                 holder.usernameTextView.text = user.username
             }
+
+        val storageRef = storage.reference.child(post.imageUrl.toString())
+        val localFile = File.createTempFile(
+            "tempImage", ".jpg"
+        )
+        storageRef.getFile(localFile).addOnSuccessListener {
+            // Local temp file has been created
+            val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+            holder.postImageView.setImageBitmap(bitmap)
+        }.addOnFailureListener {
+            holder.postImageView.setImageResource(R.drawable.baseline_image_24)
+        }
 //        holder.profileImageView.setImageResource(post.)
 //        holder.postImageView.setImageResource(post.postImageResId)
         holder.caption.text = post.content

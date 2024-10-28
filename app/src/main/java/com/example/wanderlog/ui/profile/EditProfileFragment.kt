@@ -35,7 +35,7 @@ class EditProfileFragment : Fragment() {
         _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-
+        getUserDetails()
         binding.resetPassword.setOnClickListener{
             Log.d("Reset Password", currentUser.email)
             val myIntent = Intent(
