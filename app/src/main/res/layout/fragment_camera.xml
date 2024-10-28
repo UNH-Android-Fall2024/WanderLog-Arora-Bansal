@@ -7,9 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Camera Preview -->
-
-    <!-- Image Picker Icon -->
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"

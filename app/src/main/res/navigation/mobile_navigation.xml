@@ -73,9 +73,18 @@
         android:label="SearchViewFragment"
         tools:layout="@layout/fragment_search_list">
 
-
-
     </fragment>
+
+
+    <fragment
+        android:id="@+id/addPostFragment"
+        android:name="com.example.wanderlog.ui.camera.AddPostFragment"
+        android:label="Add Post">
+        <argument
+            android:name="imageUri"
+            app:argType="string" />
+    </fragment>
+
 
 
 

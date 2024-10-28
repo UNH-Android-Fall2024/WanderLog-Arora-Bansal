@@ -1,60 +1,133 @@
 package com.example.wanderlog.ui.camera
 
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import com.example.wanderlog.R
+import com.example.wanderlog.databinding.FragmentAddPostBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.StorageTask
+import com.google.firebase.storage.UploadTask
+import com.google.android.gms.tasks.Continuation
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AddPostFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddPostFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var viewbinding: FragmentAddPostBinding
+    private var myUrl = ""
+    private var imageUri: Uri? = null
+    private var storagePostPictureRef: StorageReference? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_post, container, false)
+    ): View {
+        viewbinding = FragmentAddPostBinding.inflate(inflater, container, false)
+        return viewbinding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddPostFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddPostFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        viewbinding.progressBar.visibility = View.GONE // Hide progress bar initially
+        storagePostPictureRef = FirebaseStorage.getInstance().reference.child("Post Picture")
+
+        // Retrieve and display image URI
+        imageUri = arguments?.getParcelable("imageUri") // Use class-level variable
+        if (imageUri != null) {
+            viewbinding.postImage.setImageURI(imageUri)
+        } else {
+            Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+        }
+
+        viewbinding.postButton.setOnClickListener {
+            uploadPost() // Upload to Firebase when "Post" button is clicked
+        }
+    }
+
+
+    private fun uploadPost() {
+        // Show the ProgressBar
+        viewbinding.progressBar.visibility = View.VISIBLE
+
+        if (imageUri == null) {
+            Toast.makeText(requireContext(), "Please select an image.", Toast.LENGTH_LONG).show()
+            viewbinding.progressBar.visibility = View.GONE
+            return
+        }
+        if (TextUtils.isEmpty(viewbinding.captionInput.text.toString())) {
+            Toast.makeText(requireContext(), "Please write a caption.", Toast.LENGTH_LONG).show()
+            viewbinding.progressBar.visibility = View.GONE
+            return
+        }
+
+        val fileRef = storagePostPictureRef!!.child("${System.currentTimeMillis()}.jpg")
+        val uploadTask = fileRef.putFile(imageUri!!)
+
+        uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let { throw it }
             }
+            fileRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            viewbinding.progressBar.visibility = View.GONE // Hide ProgressBar
+            if (task.isSuccessful) {
+                myUrl = task.result.toString()
+
+                // Save post details to Firebase Database
+                val ref = FirebaseDatabase.getInstance().reference.child("Posts")
+                val postId = ref.push().key!!
+
+                val postMap = hashMapOf(
+                    "caption" to viewbinding.captionInput.text.toString(),
+                    "userID" to FirebaseAuth.getInstance().currentUser!!.uid,
+                    "imageUrl" to myUrl
+                )
+
+                ref.child(postId).updateChildren(postMap as Map<String, Any>).addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        Toast.makeText(requireContext(), "Post uploaded successfully", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to upload post.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(requireContext(), "Upload failed. Please try again.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+//    private fun addPosttoFirebase(content: String,
+//                                  userID: String,
+//                                  imageUrl: String? = null // Added imageUrl parameter
+//    ){
+//
+//        val post = hashMapOf(
+//            "content" to viewbinding.captionInput.text.toString(),
+//
+//                )
+//        if (imageUrl != null) {
+//            post["imageUrl"] = imageUrl
+//        }
+//    }
+
+    companion object {
+        fun newInstance(imageUri: Uri): AddPostFragment {
+            return AddPostFragment().apply {
+                arguments = bundleOf("imageUri" to imageUri)
+            }
+        }
     }
 }
