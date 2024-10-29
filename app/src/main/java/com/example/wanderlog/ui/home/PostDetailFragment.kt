@@ -52,16 +52,18 @@ class PostDetailFragment : Fragment() {
         }.addOnFailureListener {
             binding.postImage.setImageResource(R.drawable.baseline_image_24)
         }
-        val storageRef1 = storage.reference.child(profilePicture.toString())
-        val localFile1 = File.createTempFile(
-            "tempImage1", ".jpg"
-        )
-        storageRef1.getFile(localFile1).addOnSuccessListener {
-            // Local temp file has been created
-            val bitmap1 = BitmapFactory.decodeFile(localFile1.absolutePath)
-            binding.profileImage.setImageBitmap(bitmap1)
-        }.addOnFailureListener {
-            binding.profileImage.setImageResource(R.drawable.baseline_person_24)
+        if(profilePicture!=""){
+            val storageRef1 = storage.reference.child(profilePicture.toString())
+            val localFile1 = File.createTempFile(
+                "tempImage1", ".jpg"
+            )
+            storageRef1.getFile(localFile1).addOnSuccessListener {
+                // Local temp file has been created
+                val bitmap1 = BitmapFactory.decodeFile(localFile1.absolutePath)
+                binding.profileImage.setImageBitmap(bitmap1)
+            }.addOnFailureListener {
+                binding.profileImage.setImageResource(R.drawable.baseline_person_24)
+            }
         }
         binding.likeCount.text = likes
         binding.viewComments.text = comments
