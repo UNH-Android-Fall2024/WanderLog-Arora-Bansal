@@ -1,12 +1,15 @@
 package com.example.wanderlog.ui.camera
 
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.wanderlog.R
@@ -22,8 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 
 class AddPostFragment : Fragment() {
-
-    private lateinit var viewbinding: FragmentAddPostBinding
+    private lateinit var viewBinding: FragmentAddPostBinding
     private var myUrl = ""
     private var imageUri: Uri? = null
     private var storagePostPictureRef: StorageReference? = null
@@ -32,43 +34,48 @@ class AddPostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewbinding = FragmentAddPostBinding.inflate(inflater, container, false)
-        return viewbinding.root
+        viewBinding = FragmentAddPostBinding.inflate(inflater, container, false)
+        return viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        viewbinding.progressBar.visibility = View.GONE
+        viewBinding.progressBar.visibility = View.GONE
         storagePostPictureRef = FirebaseStorage.getInstance().reference.child("Post Picture")
 
-        // Retrieve and display image URI
-        imageUri = arguments?.getParcelable("imageUri")
-        if (imageUri != null) {
-            viewbinding.postImage.setImageURI(imageUri)
+        // Get the image URI from arguments
+        imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getParcelable("imageUri", Uri::class.java)
         } else {
+            @Suppress("DEPRECATION")
+            arguments?.getParcelable("imageUri")
+        }
+
+        // Set the image if URI is available
+        imageUri?.let {
+            viewBinding.postImage.setImageURI(it)
+        } ?: run {
             Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
         }
 
-        viewbinding.postButton.setOnClickListener {
+        viewBinding.postButton.setOnClickListener {
             uploadPost()
         }
     }
 
-
     private fun uploadPost() {
         // Show the ProgressBar
-        viewbinding.progressBar.visibility = View.VISIBLE
+
 
         if (imageUri == null) {
             Toast.makeText(requireContext(), "Please select an image.", Toast.LENGTH_LONG).show()
-            viewbinding.progressBar.visibility = View.GONE
+
             return
         }
-        if (TextUtils.isEmpty(viewbinding.captionInput.text.toString())) {
+        if (TextUtils.isEmpty(viewBinding.captionInput.text.toString())) {
             Toast.makeText(requireContext(), "Please write a caption.", Toast.LENGTH_LONG).show()
-            viewbinding.progressBar.visibility = View.GONE
+
             return
         }
 
@@ -81,7 +88,7 @@ class AddPostFragment : Fragment() {
             }
             fileRef.downloadUrl
         }.addOnCompleteListener { task ->
-            viewbinding.progressBar.visibility = View.GONE // Hide ProgressBar
+
             if (task.isSuccessful) {
                 myUrl = task.result.toString()
 
@@ -90,7 +97,7 @@ class AddPostFragment : Fragment() {
                 val postId = ref.push().key!!
 
                 val postMap = hashMapOf(
-                    "caption" to viewbinding.captionInput.text.toString(),
+                    "caption" to viewBinding.captionInput.text.toString(),
                     "userID" to FirebaseAuth.getInstance().currentUser!!.uid,
                     "imageUrl" to myUrl
                 )

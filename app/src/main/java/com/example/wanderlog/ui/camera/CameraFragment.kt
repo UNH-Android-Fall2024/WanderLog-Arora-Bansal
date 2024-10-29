@@ -193,20 +193,21 @@ class CameraFragment : Fragment() {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
-                override fun onImageSaved(output: ImageCapture.OutputFileResults){
-                    savedImageUri = output.savedUri // Save the image URI here
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    savedImageUri = output.savedUri
                     val msg = "Photo capture succeeded: $savedImageUri"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show() // Use requireContext()
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
 
-                    findNavController().navigate(R.id.action_navigation_camera_to_addPostFragment2)
-                    AddPostFragment().apply {
-                        arguments = Bundle().apply {
-                            putParcelable("imageUri", savedImageUri)
-                        }
+                    // Pass the URI to AddPostFragment using Safe Args
+                    val bundle = Bundle().apply {
+                        putParcelable("imageUri", savedImageUri)
                     }
-
-               }
+                    findNavController().navigate(
+                        R.id.action_navigation_camera_to_addPostFragment2,
+                        bundle
+                    )
+                }
             }
         )
     }
@@ -217,10 +218,12 @@ class CameraFragment : Fragment() {
                 putParcelable("imageUri", uri)
             }
         }
+
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, addPostFragment)
             .addToBackStack(null)
             .commit()
+
     }
 
     private fun startCamera() {
