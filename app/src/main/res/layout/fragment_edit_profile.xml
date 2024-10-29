@@ -13,14 +13,14 @@
     tools:context=".ui.signup.SignupActivity">
 
     <ImageView
-        android:id="@+id/imageView7"
+        android:id="@+id/profilePictureImage"
         android:layout_width="110dp"
         android:layout_height="113dp"
         android:layout_gravity="center"
-        android:background="@drawable/profile_picture_border"
         app:srcCompat="@drawable/baseline_person_24" />
 
     <TextView
+        android:id="@+id/profilePicture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

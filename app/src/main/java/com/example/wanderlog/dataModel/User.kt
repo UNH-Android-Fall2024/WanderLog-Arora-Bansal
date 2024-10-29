@@ -7,4 +7,6 @@ class User (
     val username: String = "",
     val bio: String = "",
     val FirebaseAuthID: String = "",
-    val profilePicture: String = "")
+    val profilePicture: String = "") {
+
+}

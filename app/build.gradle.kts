@@ -42,6 +42,7 @@ android {
 
 
 dependencies {
+    implementation(libs.androidx.fragment.ktx)
     val cameraxVersion = "1.2.2"
     implementation("androidx.camera:camera-core:$cameraxVersion")
     implementation("androidx.camera:camera-camera2:$cameraxVersion")
@@ -61,6 +62,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.recyclerview)
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -69,4 +71,5 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.mapbox.maps:android:11.7.0")
+    implementation("com.google.firebase:firebase-storage")
 }
