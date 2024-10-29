@@ -43,11 +43,11 @@
         android:orientation="horizontal">
 
         <ImageView
+            app:shapeAppearanceOverlay="@style/CircleImageView"
             android:id="@+id/profilePicture"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_gravity="center"
-            android:background="@drawable/profile_picture_border"
             app:srcCompat="@drawable/baseline_person_24" />
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 package com.example.wanderlog.ui.profile
 
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.storage
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
@@ -22,10 +24,12 @@ import com.mapbox.maps.extension.style.atmosphere.generated.atmosphere
 import com.mapbox.maps.extension.style.layers.properties.generated.ProjectionName
 import com.mapbox.maps.extension.style.projection.generated.projection
 import com.mapbox.maps.extension.style.style
+import java.io.File
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
+    private var storage = Firebase.storage
     private val binding get() = _binding!!
     private var db = Firebase.firestore
     private var auth = Firebase.auth
@@ -90,6 +94,19 @@ class ProfileFragment : Fragment() {
                 "@${user.username}".also { binding.username.text = it }
                 binding.fullname.text = user.fullname
                 binding.bio.text = user.bio
+                if(user.profilePicture!=""){
+                    val storageRef = storage.reference.child(user.profilePicture)
+                    val localFile = File.createTempFile(
+                        "tempImage", ".jpg"
+                    )
+                    storageRef.getFile(localFile).addOnSuccessListener {
+                        // Local temp file has been created
+                        val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                        binding.profilePicture.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        binding.profilePicture.setImageResource(R.drawable.baseline_person_24)
+                    }
+                }
             }
 
     }

@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -173,6 +174,19 @@ class EditProfileFragment : Fragment() {
                 binding.fullname.setText(user.fullname)
                 binding.bio.setText(user.bio)
                 binding.email.setText(user.email)
+                if(user.profilePicture!=""){
+                    val storageRef = storage.reference.child(user.profilePicture)
+                    val localFile = File.createTempFile(
+                        "tempImage", ".jpg"
+                    )
+                    storageRef.getFile(localFile).addOnSuccessListener {
+                        // Local temp file has been created
+                        val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                        binding.profilePictureImage.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        binding.profilePictureImage.setImageResource(R.drawable.baseline_person_24)
+                    }
+                }
             }
 
     }
