@@ -48,6 +48,19 @@ class PostAdapter(
             .addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject<User>()!!
                 holder.usernameTextView.text = user.username
+                if(user.profilePicture!="") {
+                    val storageRef1 = storage.reference.child(user.profilePicture.toString())
+                    val localFile1 = File.createTempFile(
+                        "tempImage1", ".jpg"
+                    )
+                    storageRef1.getFile(localFile1).addOnSuccessListener {
+                        // Local temp file has been created
+                        val bitmap = BitmapFactory.decodeFile(localFile1.absolutePath)
+                        holder.profileImageView.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        holder.profileImageView.setImageResource(R.drawable.baseline_image_24)
+                    }
+                }
             }
 
         val storageRef = storage.reference.child(post.imageUrl.toString())
@@ -61,6 +74,8 @@ class PostAdapter(
         }.addOnFailureListener {
             holder.postImageView.setImageResource(R.drawable.baseline_image_24)
         }
+
+
 //        holder.profileImageView.setImageResource(post.)
 //        holder.postImageView.setImageResource(post.postImageResId)
         holder.caption.text = post.content

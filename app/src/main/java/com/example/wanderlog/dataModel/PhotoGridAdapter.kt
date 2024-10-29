@@ -42,7 +42,7 @@ class PhotoGridAdapter(
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         val post = photoList[position]
-        var username = ""
+
         Log.d("PostImage", post.imageUrl)
         val storageRef = storage.reference.child(post.imageUrl)
         val localFile = File.createTempFile(
@@ -62,6 +62,7 @@ class PhotoGridAdapter(
                 .addOnSuccessListener { documentSnapshot ->
                     val user = documentSnapshot.toObject<User>()!!
                     putString("username", user.username)
+                    putString("profilePic", user.profilePicture)
                 }
 
             putString("imageUrl", post.imageUrl.toString())
