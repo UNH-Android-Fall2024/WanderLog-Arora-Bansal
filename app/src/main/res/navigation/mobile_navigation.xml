@@ -25,7 +25,11 @@
         android:id="@+id/navigation_camera"
         android:name="com.example.wanderlog.ui.camera.CameraFragment"
         android:label="@string/title_camera"
-        tools:layout="@layout/fragment_camera" />
+        tools:layout="@layout/fragment_camera" >
+        <action
+            android:id="@+id/action_navigation_camera_to_addPostFragment2"
+            app:destination="@id/addPostFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -52,7 +56,7 @@
         <action
             android:id="@+id/action_editProfileNavigation_to_navigation_profile"
             app:destination="@id/navigation_profile"
-            />
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment
@@ -74,19 +78,15 @@
         tools:layout="@layout/fragment_search_list">
 
     </fragment>
-
-
     <fragment
         android:id="@+id/addPostFragment"
         android:name="com.example.wanderlog.ui.camera.AddPostFragment"
-        android:label="Add Post">
-        <argument
-            android:name="imageUri"
-            app:argType="string" />
+        android:label="fragment_add_post"
+        tools:layout="@layout/fragment_add_post" >
+        <action
+            android:id="@+id/action_addPostFragment_to_navigation_camera"
+            app:destination="@id/navigation_camera" />
     </fragment>
-
-
-
 
 
 </navigation>

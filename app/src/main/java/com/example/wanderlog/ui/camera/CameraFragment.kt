@@ -28,6 +28,7 @@ import java.util.Locale
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.camera.core.ImageCaptureException
+import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
 
 
@@ -75,7 +76,6 @@ class CameraFragment : Fragment() {
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
                 val selectedImageUri = result.data?.data
-                // Handle the selected image here
                 Toast.makeText(requireContext(), "Selected Image: $selectedImageUri", Toast.LENGTH_SHORT).show()
             }
         }
@@ -198,8 +198,15 @@ class CameraFragment : Fragment() {
                     val msg = "Photo capture succeeded: $savedImageUri"
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show() // Use requireContext()
                     Log.d(TAG, msg)
-                    navigateToAddPostFragment(savedImageUri)
-                }
+
+                    findNavController().navigate(R.id.action_navigation_camera_to_addPostFragment2)
+                    AddPostFragment().apply {
+                        arguments = Bundle().apply {
+                            putParcelable("imageUri", savedImageUri)
+                        }
+                    }
+
+               }
             }
         )
     }

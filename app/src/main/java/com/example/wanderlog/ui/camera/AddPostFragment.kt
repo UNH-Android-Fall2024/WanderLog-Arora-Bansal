@@ -40,11 +40,11 @@ class AddPostFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        viewbinding.progressBar.visibility = View.GONE // Hide progress bar initially
+        viewbinding.progressBar.visibility = View.GONE
         storagePostPictureRef = FirebaseStorage.getInstance().reference.child("Post Picture")
 
         // Retrieve and display image URI
-        imageUri = arguments?.getParcelable("imageUri") // Use class-level variable
+        imageUri = arguments?.getParcelable("imageUri")
         if (imageUri != null) {
             viewbinding.postImage.setImageURI(imageUri)
         } else {
@@ -52,7 +52,7 @@ class AddPostFragment : Fragment() {
         }
 
         viewbinding.postButton.setOnClickListener {
-            uploadPost() // Upload to Firebase when "Post" button is clicked
+            uploadPost()
         }
     }
 
@@ -109,19 +109,6 @@ class AddPostFragment : Fragment() {
     }
 
 
-//    private fun addPosttoFirebase(content: String,
-//                                  userID: String,
-//                                  imageUrl: String? = null // Added imageUrl parameter
-//    ){
-//
-//        val post = hashMapOf(
-//            "content" to viewbinding.captionInput.text.toString(),
-//
-//                )
-//        if (imageUrl != null) {
-//            post["imageUrl"] = imageUrl
-//        }
-//    }
 
     companion object {
         fun newInstance(imageUri: Uri): AddPostFragment {
