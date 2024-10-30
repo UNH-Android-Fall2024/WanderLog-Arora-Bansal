@@ -18,6 +18,7 @@
             android:id="@+id/action_navigation_home_self"
             app:destination="@id/navigation_home" />
 
+        <action
             android:id="@+id/action_navigation_home_to_otherUserProfile"
             app:destination="@id/otherUserProfile" />
 
@@ -93,7 +94,6 @@
             app:destination="@id/otherUserProfile" />
     </fragment>
 
-    </fragment>
   
     <fragment
         android:id="@+id/cameraFragment"
