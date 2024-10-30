@@ -106,12 +106,7 @@
         <argument
             android:name="postImageUrl"
             app:argType="string" />
-        <argument
-            android:name="likes"
-            app:argType="string" />
-        <argument
-            android:name="comments"
-            app:argType="string" />
+
     </fragment>
 
 

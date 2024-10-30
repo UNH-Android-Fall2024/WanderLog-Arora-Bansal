@@ -55,8 +55,9 @@ class PhotoGalleryFragment : Fragment() {
                 photoList.clear()
                 for (document in result){
                     val post = document.toObject<Post>()
+                    post.postID = document.id
                     photoList.add(post)
-                    Log.d("ShowPhotos", post.imageUrl)
+                    Log.d("ShowPhotos", document.id)
 
                 }
                 photoAdapter.notifyDataSetChanged()
