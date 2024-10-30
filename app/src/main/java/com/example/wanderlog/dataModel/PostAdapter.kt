@@ -54,7 +54,12 @@ class PostAdapter(
             .addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject<User>()!!
                 holder.usernameTextView.text = user.username
-                holder.postUsername.text = user.username
+                if(post.content == ""){
+                    holder.postUsername.text = ""
+                }
+                else{
+                    holder.postUsername.text = user.username
+                }
                     if(user.profilePicture!="") {
                     val storageRef1 = storage.reference.child(user.profilePicture.toString())
                     val localFile1 = File.createTempFile(
