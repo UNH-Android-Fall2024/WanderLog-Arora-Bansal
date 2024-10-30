@@ -121,4 +121,5 @@
     <string name="write_a_caption">Write a caption...</string>
     <string name="post">Post</string>
     <string name="image_view">image view</string>
+    <string name="add_post">Add Post</string>
 </resources>

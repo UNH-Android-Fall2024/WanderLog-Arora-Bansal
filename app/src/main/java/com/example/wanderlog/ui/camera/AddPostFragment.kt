@@ -7,28 +7,29 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
+import com.example.wanderlog.dataModel.Post
 import com.example.wanderlog.databinding.FragmentAddPostBinding
+import com.example.wanderlog.ui.home.HomeFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.StorageTask
-import com.google.firebase.storage.UploadTask
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.firestore
 
 class AddPostFragment : Fragment() {
     private lateinit var viewBinding: FragmentAddPostBinding
-    private var myUrl = ""
     private var imageUri: Uri? = null
-    private var storagePostPictureRef: StorageReference? = null
+
+    private val db = Firebase.firestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +42,6 @@ class AddPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storagePostPictureRef = FirebaseStorage.getInstance().reference.child("Post Picture")
 
         imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable("imageUri", Uri::class.java)
@@ -62,20 +62,21 @@ class AddPostFragment : Fragment() {
     }
 
     private fun uploadPost() {
-
         if (imageUri == null) {
             Toast.makeText(requireContext(), "Please select an image.", Toast.LENGTH_LONG).show()
-
             return
         }
         if (TextUtils.isEmpty(viewBinding.captionInput.text.toString())) {
             Toast.makeText(requireContext(), "Please write a caption.", Toast.LENGTH_LONG).show()
-
             return
         }
-
-        val fileRef = storagePostPictureRef!!.child("${System.currentTimeMillis()}.jpg")
+        var storagePostPictureRef = FirebaseStorage.getInstance().reference
+        val fileRef = storagePostPictureRef.child(("posts/${FirebaseAuth.getInstance().currentUser!!.uid}/${System.currentTimeMillis()}.jpg}"))
         val uploadTask = fileRef.putFile(imageUri!!)
+
+        val ref = FirebaseDatabase.getInstance().reference.child("posts")
+        val postId = ref.push().key!!
+        val path = "posts/${FirebaseAuth.getInstance()}/${postId}.jpg"
 
         uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
@@ -83,29 +84,31 @@ class AddPostFragment : Fragment() {
             }
             fileRef.downloadUrl
         }.addOnCompleteListener { task ->
+            val imageUrl = task.result.toString()
+            val post = Post(FirebaseAuth.getInstance().currentUser!!.uid,
+                viewBinding.captionInput.text.toString(), path
+            )
 
-            if (task.isSuccessful) {
-                myUrl = task.result.toString()
+            db.collection("posts").document(postId).set(post, SetOptions.merge())
+                .addOnSuccessListener {
+                    Toast.makeText(requireContext(), "Post uploaded successfully", Toast.LENGTH_LONG).show()
+                    findNavController().navigate(R.id.action_addPostFragment_to_navigation_home)
 
-                val ref = FirebaseDatabase.getInstance().reference.child("Posts")
-                val postId = ref.push().key!!
-
-                val postMap = hashMapOf(
-                    "caption" to viewBinding.captionInput.text.toString(),
-                    "userID" to FirebaseAuth.getInstance().currentUser!!.uid,
-                    "imageUrl" to myUrl
-                )
-
-                ref.child(postId).updateChildren(postMap as Map<String, Any>).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        Toast.makeText(requireContext(), "Post uploaded successfully", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(requireContext(), "Failed to upload post.", Toast.LENGTH_SHORT).show()
-                    }
                 }
-            } else {
-                Toast.makeText(requireContext(), "Upload failed. Please try again.", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(), "Failed to upload post: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+
+                }
+                        .addOnFailureListener { exception ->
+                            Toast.makeText(
+                                requireContext(),
+                                "Failed to upload post: ${exception.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+            .addOnFailureListener {
+            Toast.makeText(requireContext(), "Failed to upload image: ${it.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
