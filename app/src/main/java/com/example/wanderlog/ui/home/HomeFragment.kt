@@ -47,7 +47,7 @@ class HomeFragment : Fragment() {
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        postAdapter = PostAdapter(requireContext(), postList)
+        postAdapter = PostAdapter(requireContext(),this ,postList)
         recyclerView.adapter = postAdapter
         db.collection("connections").whereEqualTo("userID2", auth.currentUser!!.uid)
             .get()
