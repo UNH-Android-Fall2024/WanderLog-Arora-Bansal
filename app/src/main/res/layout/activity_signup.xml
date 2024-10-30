@@ -25,7 +25,8 @@
         android:layout_height="113dp"
         android:layout_gravity="center"
         android:background="@drawable/profile_picture_border"
-        app:srcCompat="@drawable/baseline_person_24" />
+        app:srcCompat="@drawable/baseline_person_24"
+        android:visibility="invisible"/>
 
     <EditText
         android:id="@+id/email"
@@ -111,10 +112,9 @@
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="64dp"
-        android:backgroundTint="#777171"
         android:enabled="true"
         android:minHeight="48dp"
-        android:text="Continue"
+        android:text="Sign Up"
         android:textColor="@color/white"
         app:cornerRadius="6dp"
 

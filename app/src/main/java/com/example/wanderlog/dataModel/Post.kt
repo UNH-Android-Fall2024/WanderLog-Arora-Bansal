@@ -2,6 +2,7 @@ package com.example.wanderlog.dataModel
 
 
 class Post (
+    var postID: String = "",
     val userID: String = "",
     val content: String = "",
     val imageUrl: String = "",

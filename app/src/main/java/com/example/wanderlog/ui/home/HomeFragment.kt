@@ -65,7 +65,9 @@ class HomeFragment : Fragment() {
                     postList.clear()
                     for (document in result) {
                         val post = document.toObject<Post>()
+                        post.postID = document.id
                         postList.add(post)
+
                     }
                     postAdapter.notifyDataSetChanged()
                     Log.d("ShowPhotos", postList[0].content)

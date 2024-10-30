@@ -65,10 +65,18 @@ class PhotoGridAdapter(
                     putString("profilePic", user.profilePicture)
                 }
 
-            putString("imageUrl", post.imageUrl.toString())
-            putString("likes", "${post.likes.count().toString()} Likes")
-            putString("comments", "${post.comments.count().toString()} Comments")
+            putString("imageUrl", post.imageUrl)
+            putInt("likes", post.likes.count())
+            putInt("comments", post.comments.count())
             putString("caption", post.content)
+            putString("postID", post.postID)
+            putString("userID", post.userID)
+            if(post.userID in post.likes){
+                putBoolean("liked", true )
+            }
+            else{
+                putBoolean("liked", false )
+            }
 
         }
 

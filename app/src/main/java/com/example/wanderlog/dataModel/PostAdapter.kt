@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.storage
@@ -29,7 +31,11 @@ class PostAdapter(
         val postImageView: ImageView = itemView.findViewById(R.id.postImage)
         val likesTextView: TextView = itemView.findViewById(R.id.likeCount)
         val commentsTextView: TextView = itemView.findViewById(R.id.viewComments)
-        val caption: TextView = itemView.findViewById(R.id.postDescription)
+        val caption : TextView = itemView.findViewById(R.id.postDescription)
+        val postUsername: TextView = itemView.findViewById(R.id.postUsername)
+        val likeButton: ImageView = itemView.findViewById(R.id.likeButton)
+        val likedButton: ImageView = itemView.findViewById(R.id.likedButton)
+        val commentButton: ImageView = itemView.findViewById(R.id.commentButton)
 
 
 
@@ -48,7 +54,13 @@ class PostAdapter(
             .addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject<User>()!!
                 holder.usernameTextView.text = user.username
-                if(user.profilePicture!="") {
+                if(post.content == ""){
+                    holder.postUsername.text = ""
+                }
+                else{
+                    holder.postUsername.text = user.username
+                }
+                    if(user.profilePicture!="") {
                     val storageRef1 = storage.reference.child(user.profilePicture.toString())
                     val localFile1 = File.createTempFile(
                         "tempImage1", ".jpg"
@@ -75,18 +87,39 @@ class PostAdapter(
             holder.postImageView.setImageResource(R.drawable.baseline_image_24)
         }
 
-
-//        holder.profileImageView.setImageResource(post.)
-//        holder.postImageView.setImageResource(post.postImageResId)
+        if(post.userID in post.likes){
+            holder.likeButton.visibility = View.GONE
+            holder.likedButton.visibility = View.VISIBLE
+        }
         holder.caption.text = post.content
-        holder.likesTextView.text = "${post.likes.count()} likes"
-        holder.commentsTextView.text ="${post.comments.count()} comments"
+        holder.likesTextView.text = "${post.likes.count()} Likes"
+        holder.commentsTextView.text ="${post.comments.count()} Comments"
         val bundle = Bundle().apply {
             putString("userID", post.userID)
         }
         holder.itemView.setOnClickListener {
             Navigation.createNavigateOnClickListener(R.id.action_navigation_home_to_otherUserProfile, bundle)
                 .onClick(holder.usernameTextView)
+        }
+        var likeCount = post.likes.count()
+
+        holder.likeButton.setOnClickListener{
+            if (post.postID != null) {
+                db.collection("posts").document(post.postID).update("likes", FieldValue.arrayUnion(post.userID))
+            }
+            holder.likeButton.visibility = View.GONE
+            holder.likedButton.visibility = View.VISIBLE
+            likeCount = likeCount+1
+            holder.likesTextView.text = "${likeCount} Likes"
+        }
+        holder.likedButton.setOnClickListener{
+            if (post.postID != null) {
+                db.collection("posts").document(post.postID).update("likes", FieldValue.arrayRemove(post.userID))
+            }
+            holder.likedButton.visibility = View.GONE
+            holder.likeButton.visibility = View.VISIBLE
+            likeCount = likeCount-1
+            holder.likesTextView.text = "${likeCount} Likes"
         }
     }
 
