@@ -14,7 +14,6 @@
             android:id="@+id/image_view"
             android:src="@drawable/baseline_person_24"
             android:contentDescription="User Image"
-            android:background="@drawable/profile_picture_border"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="20dp"/>
 
@@ -36,6 +35,8 @@
             android:layout_below="@id/text_view_1"
             android:textSize="10sp"
             android:text="Line 2"/>
+
+
 
     </RelativeLayout>
 
