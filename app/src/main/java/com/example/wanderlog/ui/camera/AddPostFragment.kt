@@ -41,10 +41,8 @@ class AddPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewBinding.progressBar.visibility = View.GONE
         storagePostPictureRef = FirebaseStorage.getInstance().reference.child("Post Picture")
 
-        // Get the image URI from arguments
         imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable("imageUri", Uri::class.java)
         } else {
@@ -52,7 +50,6 @@ class AddPostFragment : Fragment() {
             arguments?.getParcelable("imageUri")
         }
 
-        // Set the image if URI is available
         imageUri?.let {
             viewBinding.postImage.setImageURI(it)
         } ?: run {
@@ -65,8 +62,6 @@ class AddPostFragment : Fragment() {
     }
 
     private fun uploadPost() {
-        // Show the ProgressBar
-
 
         if (imageUri == null) {
             Toast.makeText(requireContext(), "Please select an image.", Toast.LENGTH_LONG).show()
@@ -92,7 +87,6 @@ class AddPostFragment : Fragment() {
             if (task.isSuccessful) {
                 myUrl = task.result.toString()
 
-                // Save post details to Firebase Database
                 val ref = FirebaseDatabase.getInstance().reference.child("Posts")
                 val postId = ref.push().key!!
 
@@ -114,8 +108,6 @@ class AddPostFragment : Fragment() {
             }
         }
     }
-
-
 
     companion object {
         fun newInstance(imageUri: Uri): AddPostFragment {

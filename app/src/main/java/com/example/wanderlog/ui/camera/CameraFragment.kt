@@ -64,7 +64,7 @@ class CameraFragment : Fragment() {
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
-                openGallery() // If permission is granted, open the gallery
+                openGallery()
             } else {
                 Toast.makeText(requireContext(), "Gallery permission denied", Toast.LENGTH_SHORT).show()
             }
@@ -80,7 +80,6 @@ class CameraFragment : Fragment() {
             }
         }
 
-        // Request camera permissions
         if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -124,7 +123,6 @@ class CameraFragment : Fragment() {
         startCamera()
     }
 
-    // check if gallery permission is granted
     private fun checkGalleryPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // For Android 13 and above
@@ -154,7 +152,7 @@ class CameraFragment : Fragment() {
     }
 
 
-    // function for Gallery opening
+
     private fun openGallery(){
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -176,15 +174,12 @@ class CameraFragment : Fragment() {
             }
         }
 
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(requireContext().contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 contentValues)
             .build()
 
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(requireContext()), // Use requireContext()
@@ -199,7 +194,6 @@ class CameraFragment : Fragment() {
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
 
-                    // Pass the URI to AddPostFragment using Safe Args
                     val bundle = Bundle().apply {
                         putParcelable("imageUri", savedImageUri)
                     }
@@ -212,28 +206,12 @@ class CameraFragment : Fragment() {
         )
     }
 
-    private fun navigateToAddPostFragment(uri: Uri?) {
-        val addPostFragment = AddPostFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable("imageUri", uri)
-            }
-        }
-
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, addPostFragment)
-            .addToBackStack(null)
-            .commit()
-
-    }
-
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener({
-            // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Preview
             val preview = Preview.Builder()
                 .build()
                 .also {
@@ -245,10 +223,8 @@ class CameraFragment : Fragment() {
 
 
             try {
-                // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
 
-                // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture)
 
