@@ -63,7 +63,7 @@ class OtherProfileFragment : Fragment() {
                 }
             )
             loadStyle(
-                style(Style.LIGHT) {
+                style(Style.SATELLITE_STREETS) {
                     +atmosphere { }
                     +projection(ProjectionName.GLOBE)
                 }

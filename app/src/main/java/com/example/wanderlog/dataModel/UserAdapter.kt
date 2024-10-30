@@ -2,6 +2,7 @@ package com.example.wanderlog.dataModel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,9 @@ import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import java.io.File
 
 
 class UserAdapter(
@@ -38,6 +42,19 @@ class UserAdapter(
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         val(imageResource, text1, text2, text3) = mList[position]
+        if(imageResource!="") {
+            val storageRef = Firebase.storage.reference.child(imageResource)
+            val localFile = File.createTempFile(
+                "tempImage1", ".jpg"
+            )
+            storageRef.getFile(localFile).addOnSuccessListener {
+                // Local temp file has been created
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                holder.profilePicture.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                holder.profilePicture.setImageResource(R.drawable.baseline_image_24)
+            }
+        }
         holder.username.text = text1
         holder.fullname.text = text2
         val bundle = Bundle().apply {
