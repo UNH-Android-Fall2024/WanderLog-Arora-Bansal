@@ -14,8 +14,13 @@
             android:id="@+id/action_navigation_home_to_searchNavigation"
             app:destination="@id/searchNavigation" />
         <action
+
+            android:id="@+id/action_navigation_home_self"
+            app:destination="@id/navigation_home" />
+
             android:id="@+id/action_navigation_home_to_otherUserProfile"
             app:destination="@id/otherUserProfile" />
+
     </fragment>
 
     <fragment
@@ -28,7 +33,11 @@
         android:id="@+id/navigation_camera"
         android:name="com.example.wanderlog.ui.camera.CameraFragment"
         android:label="@string/title_camera"
-        tools:layout="@layout/fragment_camera" />
+        tools:layout="@layout/fragment_camera" >
+        <action
+            android:id="@+id/action_navigation_camera_to_addPostFragment2"
+            app:destination="@id/addPostFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -55,7 +64,7 @@
         <action
             android:id="@+id/action_editProfileNavigation_to_navigation_profile"
             app:destination="@id/navigation_profile"
-            />
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment
@@ -84,6 +93,26 @@
             app:destination="@id/otherUserProfile" />
     </fragment>
 
+    </fragment>
+  
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.example.wanderlog.ui.camera.CameraFragment"
+        android:label="Camera Fragment">
+        <action
+            android:id="@+id/action_cameraFragment_to_addPostFragment"
+            app:destination="@id/addPostFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addPostFragment"
+        android:name="com.example.wanderlog.ui.camera.AddPostFragment"
+        android:label="Add Post Fragment">
+
+        <argument
+            android:name="savedImageUri"
+            app:argType="string" />
+      
     <fragment
         android:id="@+id/otherUserProfile"
         android:name="com.example.wanderlog.ui.profile.OtherProfileFragment"
@@ -115,11 +144,9 @@
     </fragment>
 
 
+        <action android:id="@+id/action_addPostFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
 
-
-
-
-
-
+    </fragment>
 
 </navigation>
