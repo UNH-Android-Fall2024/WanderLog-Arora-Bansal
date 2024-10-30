@@ -71,7 +71,7 @@ class AddPostFragment : Fragment() {
             return
         }
         var storagePostPictureRef = FirebaseStorage.getInstance().reference
-        val fileRef = storagePostPictureRef.child(("posts/${FirebaseAuth.getInstance().currentUser!!.uid}/${System.currentTimeMillis()}.jpg}"))
+        val fileRef = storagePostPictureRef.child(("posts/${FirebaseAuth.getInstance().currentUser!!.uid}/${System.currentTimeMillis()}.jpg"))
         val uploadTask = fileRef.putFile(imageUri!!)
 
         val ref = FirebaseDatabase.getInstance().reference.child("posts")
