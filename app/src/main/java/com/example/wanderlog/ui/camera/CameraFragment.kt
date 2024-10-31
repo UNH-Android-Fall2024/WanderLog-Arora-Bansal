@@ -76,6 +76,15 @@ class CameraFragment : Fragment() {
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
                 val selectedImageUri = result.data?.data
+                if (selectedImageUri!=null){
+                    val bundle = Bundle().apply{
+                        putParcelable("imageUri", selectedImageUri)
+                    }
+                    findNavController().navigate(
+                        R.id.action_navigation_camera_to_addPostFragment2,
+                        bundle
+                    )
+                }
                 Toast.makeText(requireContext(), "Selected Image: $selectedImageUri", Toast.LENGTH_SHORT).show()
             }
         }
