@@ -48,8 +48,7 @@
 
         <action
             android:id="@+id/action_navigation_profile_to_editProfileNavigation"
-            app:destination="@id/editProfileNavigation"
-           />
+            app:destination="@id/editProfileNavigation" />
         <action
             android:id="@+id/action_navigation_profile_to_showPhotosNavigation"
             app:destination="@id/showPhotosNavigation" />

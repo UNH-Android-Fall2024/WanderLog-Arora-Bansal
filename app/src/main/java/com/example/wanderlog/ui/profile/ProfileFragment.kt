@@ -6,7 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigator
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
 import com.example.wanderlog.dataModel.User
@@ -68,8 +72,8 @@ class ProfileFragment : Fragment() {
             )
         }
 
-        // Add the map view to the activity (you can also add it to other views as a child)
         binding.editProfile.setOnClickListener {
+
             findNavController().navigate(R.id.action_navigation_profile_to_editProfileNavigation)
         }
 

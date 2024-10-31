@@ -85,9 +85,9 @@ class AddPostFragment : Fragment() {
 //    val likes: ArrayList<String> = ArrayList(),
 //    val location: ArrayList<String> = ArrayList(),
             val submit = Post(
-                auth.currentUser!!.uid,
-                viewBinding.captionInput.text.toString(),
-                postPath
+                userID = auth.currentUser!!.uid,
+                content = viewBinding.captionInput.text.toString(),
+                imageUrl = postPath
             )
             db.collection("posts").document(uniqueID.toString()).set(submit, SetOptions.merge())
             Log.d("uploaded","Success $postPath")
