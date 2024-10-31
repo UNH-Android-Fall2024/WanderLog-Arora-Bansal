@@ -104,7 +104,7 @@ class PostAdapter(
         var likeCount = post.likes.count()
 
         holder.likeButton.setOnClickListener{
-            if (post.postID != null) {
+            if (post.postID != "") {
                 db.collection("posts").document(post.postID).update("likes", FieldValue.arrayUnion(post.userID))
             }
             holder.likeButton.visibility = View.GONE
@@ -113,7 +113,7 @@ class PostAdapter(
             holder.likesTextView.text = "${likeCount} Likes"
         }
         holder.likedButton.setOnClickListener{
-            if (post.postID != null) {
+            if (post.postID != "") {
                 db.collection("posts").document(post.postID).update("likes", FieldValue.arrayRemove(post.userID))
             }
             holder.likedButton.visibility = View.GONE
