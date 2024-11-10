@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.database.ktx)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.play.services.location)
     val cameraxVersion = "1.2.2"
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
