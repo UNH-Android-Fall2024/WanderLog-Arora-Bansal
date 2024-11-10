@@ -134,7 +134,7 @@ class CameraFragment : Fragment() {
 
     private fun checkGalleryPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // For Android 13 and above
+
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_MEDIA_IMAGES
@@ -142,11 +142,9 @@ class CameraFragment : Fragment() {
             ) {
                 openGallery()
             } else {
-                // Request permission for Android 13+
                 permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
             }
         } else {
-            // For below Android 13
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -154,7 +152,6 @@ class CameraFragment : Fragment() {
             ) {
                 openGallery()
             } else {
-                // Request permission for below Android 13
                 permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
@@ -264,7 +261,8 @@ class CameraFragment : Fragment() {
         private val REQUIRED_PERMISSIONS =
             mutableListOf (
                 Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE // for gallery
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_FINE_LOCATION
             ).apply {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
                     add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
