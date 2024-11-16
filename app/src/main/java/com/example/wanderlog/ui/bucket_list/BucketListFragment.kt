@@ -86,8 +86,8 @@ class BucketListFragment : Fragment() {
                 "city" to city,
                 "country" to country,
                 "userID" to auth.currentUser!!.uid,
-                "latitude" to 0,
-                "longitude" to 0,
+                "latitude" to 0.0,
+                "longitude" to 0.0,
                 "visited" to false
             )
             if (country.isNotEmpty() && city.isNotEmpty()) {
@@ -95,7 +95,7 @@ class BucketListFragment : Fragment() {
                 db.collection("locations")
                     .add(location)
                     .addOnSuccessListener { documentReference ->
-                        bucketListItems.add(Location(documentReference.id,auth.currentUser!!.uid,city,country,0,0,false))
+                        bucketListItems.add(Location(documentReference.id,auth.currentUser!!.uid,city,country,0.0,0.0,false))
                         Log.d("AddLocation", "DocumentSnapshot written with ID: ${documentReference.id}")
                         adapter.notifyDataSetChanged()
 

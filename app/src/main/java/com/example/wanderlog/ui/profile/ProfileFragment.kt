@@ -3,14 +3,20 @@ package com.example.wanderlog.ui.profile
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.ContextCompat
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
+import com.example.wanderlog.dataModel.Location
 import com.example.wanderlog.dataModel.User
 import com.example.wanderlog.databinding.FragmentProfileBinding
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
@@ -24,10 +30,16 @@ import com.mapbox.maps.extension.style.atmosphere.generated.atmosphere
 import com.mapbox.maps.extension.style.layers.properties.generated.ProjectionName
 import com.mapbox.maps.extension.style.projection.generated.projection
 import com.mapbox.maps.extension.style.style
+import com.mapbox.maps.extension.style.image.image
+import com.mapbox.maps.extension.style.layers.generated.symbolLayer
+import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
+import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import java.io.File
 
 class ProfileFragment : Fragment() {
-
+    private val BLUE_ICON_ID = "green"
+    private val SOURCE_ID = "source_id"
+    private val LAYER_ID = "layer_id"
     private var _binding: FragmentProfileBinding? = null
     private var storage = Firebase.storage
     private val binding get() = _binding!!
@@ -37,6 +49,8 @@ class ProfileFragment : Fragment() {
     private companion object {
         private const val ZOOM = 0.45
         private val CENTER = Point.fromLngLat(30.0, 50.0)
+        private val markerCoordinates = arrayListOf<Point>()
+
     }
 
     override fun onCreateView(
@@ -50,23 +64,8 @@ class ProfileFragment : Fragment() {
         getPostCount()
         getFollowerCount()
         getFollowingCount()
+        getLocations()
 
-        // Create a map programmatically and set the initial camera
-        mapView = binding.mapView
-        mapView.mapboxMap.apply {
-            setCamera(
-                cameraOptions {
-                    center(CENTER)
-                    zoom(ZOOM)
-                }
-            )
-            loadStyle(
-                style(Style.SATELLITE_STREETS) {
-                    +atmosphere { }
-                    +projection(ProjectionName.GLOBE)
-                }
-            )
-        }
 
         // Add the map view to the activity (you can also add it to other views as a child)
         binding.editProfile.setOnClickListener {
@@ -109,6 +108,51 @@ class ProfileFragment : Fragment() {
                 }
             }
 
+    }
+    private fun getLocations(){
+        db.collection("locations").whereEqualTo("userID",auth.currentUser!!.uid)
+            .get()
+            .addOnSuccessListener {result ->
+                markerCoordinates.clear()
+                for (document in result){
+                    val location = document.toObject<Location>()
+                    location.locationID = document.id
+                    markerCoordinates.add(Point.fromLngLat(location.longitude, location.latitude))
+                    Log.d("ShowLocation", document.id)
+
+                }
+
+            }
+        mapView = binding.mapView
+        mapView.mapboxMap.apply {
+            setCamera(
+                cameraOptions {
+                    center(CENTER)
+                    zoom(ZOOM)
+                }
+            )
+            loadStyle(
+                style(Style.SATELLITE_STREETS) {
+                    +atmosphere { }
+                    +projection(ProjectionName.GLOBE)
+                    // prepare blue marker from resources
+                    +image(
+                        BLUE_ICON_ID,
+                        ContextCompat.getDrawable(requireContext(),R.drawable.baseline_location_pin_24)!!.toBitmap()
+                    )
+                    +geoJsonSource(SOURCE_ID) {
+                        featureCollection(
+                            FeatureCollection.fromFeatures(markerCoordinates.map { Feature.fromGeometry(it) })
+                        )
+                    }
+                    +symbolLayer(LAYER_ID, SOURCE_ID) {
+                        iconImage(BLUE_ICON_ID)
+                        iconAllowOverlap(true)
+                        iconAnchor(IconAnchor.BOTTOM)
+                    }
+                }
+            )
+        }
     }
     private fun getPostCount(){
         var count = 0

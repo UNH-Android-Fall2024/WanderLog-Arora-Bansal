@@ -30,6 +30,6 @@ class Location (
     val userID: String = "",
     val city: String = "",
     val country: String = "",
-    val latitude: Int = 0,
-    val longitude: Int = 0,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     val visited: Boolean = false)
