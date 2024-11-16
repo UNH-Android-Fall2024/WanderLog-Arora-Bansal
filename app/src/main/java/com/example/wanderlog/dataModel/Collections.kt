@@ -1,5 +1,14 @@
 package com.example.wanderlog.dataModel
 
+class User (
+    val email: String = "",
+    val fullname: String = "",
+    val username: String = "",
+    val bio: String = "",
+    val FirebaseAuthID: String = "",
+    val profilePicture: String = "") {
+
+}
 
 class Post (
     val userID: String = "",
@@ -9,7 +18,6 @@ class Post (
     val likes: ArrayList<String> = ArrayList(),
     val location: ArrayList<String> = ArrayList(),
     var postID: String = "",
-
     )
 
 class Connection (
@@ -18,3 +26,11 @@ class Connection (
 
    )
 
+class Location (
+    var locationID: String = "",
+    val userID: String = "",
+    val city: String = "",
+    val country: String = "",
+    val latitude: Int = 0,
+    val longitude: Int = 0,
+    val visited: Boolean = false)

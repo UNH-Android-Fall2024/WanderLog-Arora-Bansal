@@ -1,5 +1,6 @@
 package com.example.wanderlog.dataModel
 
+import androidx.fragment.app.Fragment
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -9,9 +10,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
+import com.example.wanderlog.ui.home.CommentBottomSheetFragment
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
@@ -22,6 +25,7 @@ import java.io.File
 
 class PostAdapter(
     private val context: Context,
+    private val fragment: Fragment,
     private val postList: ArrayList<Post>,
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
@@ -61,7 +65,7 @@ class PostAdapter(
                     holder.postUsername.text = user.username
                 }
                     if(user.profilePicture!="") {
-                    val storageRef1 = storage.reference.child(user.profilePicture.toString())
+                    val storageRef1 = storage.reference.child(user.profilePicture)
                     val localFile1 = File.createTempFile(
                         "tempImage1", ".jpg"
                     )
@@ -74,19 +78,19 @@ class PostAdapter(
                     }
                 }
             }
-
-        val storageRef = storage.reference.child(post.imageUrl.toString())
-        val localFile = File.createTempFile(
-            "tempImage", ".jpg"
-        )
-        storageRef.getFile(localFile).addOnSuccessListener {
-            // Local temp file has been created
-            val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-            holder.postImageView.setImageBitmap(bitmap)
-        }.addOnFailureListener {
-            holder.postImageView.setImageResource(R.drawable.baseline_image_24)
+        if (post.imageUrl!="") {
+            val storageRef = storage.reference.child(post.imageUrl.toString())
+            val localFile = File.createTempFile(
+                "tempImage", ".jpg"
+            )
+            storageRef.getFile(localFile).addOnSuccessListener {
+                // Local temp file has been created
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                holder.postImageView.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                holder.postImageView.setImageResource(R.drawable.baseline_image_24)
+            }
         }
-
         if(post.userID in post.likes){
             holder.likeButton.visibility = View.GONE
             holder.likedButton.visibility = View.VISIBLE
@@ -120,6 +124,11 @@ class PostAdapter(
             holder.likeButton.visibility = View.VISIBLE
             likeCount = likeCount-1
             holder.likesTextView.text = "${likeCount} Likes"
+        }
+
+        holder.commentButton.setOnClickListener{
+            val bottomSheetFragment = CommentBottomSheetFragment.newInstance(post.postID)
+            bottomSheetFragment.show(fragment.parentFragmentManager,"Comment Box")
         }
     }
 
