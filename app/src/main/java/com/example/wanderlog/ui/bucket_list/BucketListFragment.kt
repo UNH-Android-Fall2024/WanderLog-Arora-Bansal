@@ -7,13 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.databinding.FragmentBucketListBinding
 import com.example.wanderlog.dataModel.BucketListAdapter
 import com.example.wanderlog.dataModel.Location
-import com.example.wanderlog.dataModel.Post
 import com.example.wanderlog.databinding.DialogAddBlItemBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth

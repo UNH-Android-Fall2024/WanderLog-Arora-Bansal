@@ -21,12 +21,14 @@ class CommentAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.comment_item, parent, false)
-        Log.d("Comment", comments.toString())
+
         return CommentViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val comment = comments[position]
+        holder.commentusername.text = comment["username"]
+        holder.textComment.text = comment["comment"]
         Log.d("Comment", comment.toString())
 
     }

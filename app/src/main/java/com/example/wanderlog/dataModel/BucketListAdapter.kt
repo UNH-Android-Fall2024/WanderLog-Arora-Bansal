@@ -14,7 +14,7 @@ class BucketListAdapter(
 
     inner class BucketListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemText: CheckBox = itemView.findViewById(R.id.itemText)
-        val deleteButton: TextView = itemView.findViewById(R.id.deleteButton)
+//        val deleteButton: TextView = itemView.findViewById(R.id.deleteButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BucketListViewHolder {

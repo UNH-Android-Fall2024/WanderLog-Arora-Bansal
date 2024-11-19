@@ -98,6 +98,11 @@ class PostDetailFragment : Fragment() {
             likes = likes!!-1
             binding.likeCount.text = "${likes.toString()} Likes"
         }
+
+        binding.commentButton.setOnClickListener{
+            val bottomSheetFragment = CommentBottomSheetFragment.newInstance(postID!!)
+            bottomSheetFragment.show(parentFragmentManager,"Comment Box")
+        }
     }
 
     override fun onDestroyView() {
