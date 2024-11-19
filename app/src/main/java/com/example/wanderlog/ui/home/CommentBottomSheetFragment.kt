@@ -5,17 +5,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Orientation
 import com.example.wanderlog.dataModel.CommentAdapter
 import com.example.wanderlog.dataModel.Post
+import com.example.wanderlog.dataModel.User
 import com.example.wanderlog.databinding.FragmentCommentBottomSheetBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.divider.MaterialDivider
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 
@@ -23,6 +22,8 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentCommentBottomSheetBinding? = null
     private val binding get() = _binding!!
     private var db = Firebase.firestore
+    private var auth = Firebase.auth
+    private var username = ""
     private lateinit var commentAdapter: CommentAdapter
     private var comments: ArrayList<HashMap<String,String>> = arrayListOf() // Pass this data to the fragment or fetch from ViewModel
 
@@ -43,27 +44,39 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
                 val post = documentSnapshot.toObject<Post>()
                 if (post != null && post.comments.size != 0 ) {
                     post.comments.forEach { hashMap ->
-//                            Log.d("Show Comment 1",hashMap.toString())
                             comments.add(hashMap)
 
                         }
                     }
                 commentAdapter.notifyDataSetChanged()
-                Log.d("ShowComment", comments.toString())
                 }
 
-
-
-
-
-
-
-
-
+        binding.submitComment.setOnClickListener{
+            if(binding.newComment.text.toString() != ""){
+                if (postID != null) {
+                    postComment(postID)
+                }
+            }
+        }
         return binding.root
     }
 
+    private fun postComment(postID: String){
 
+        db.collection("users").document(auth.currentUser!!.uid).get()
+            .addOnSuccessListener {documentSnapshot ->
+                val user = documentSnapshot.toObject<User>()
+                username = user!!.username
+                Log.d("PostComment",username)
+                var newComment = hashMapOf("comment" to binding.newComment.text.toString(), "username" to username )
+                comments.add(newComment)
+                commentAdapter.notifyDataSetChanged()
+                db.collection("posts").document(postID).update("comments", FieldValue.arrayUnion(newComment))
+                binding.newComment.setText("")
+            }
+
+
+    }
     companion object {
         private const val ARG_POST_ID = "post_id"
 
