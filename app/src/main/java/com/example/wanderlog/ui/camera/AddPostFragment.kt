@@ -76,14 +76,6 @@ class AddPostFragment : Fragment() {
         uploadTask.addOnFailureListener {
             Log.d("uploadedfail",postPath)
         }.addOnSuccessListener { taskSnapshot ->
-            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-            // ...
-//            val userID: String = "",
-//    val content: String = "",
-//    val imageUrl: String = "",
-//    val comments: ArrayList<HashMap<String,String>> = ArrayList(),
-//    val likes: ArrayList<String> = ArrayList(),
-//    val location: ArrayList<String> = ArrayList(),
             val submit = Post(
                 userID = auth.currentUser!!.uid,
                 content = viewBinding.captionInput.text.toString(),
@@ -95,37 +87,6 @@ class AddPostFragment : Fragment() {
             findNavController().navigate(R.id.action_addPostFragment_to_navigation_home)
 
         }
-//        uploadTask.continueWithTask { task ->
-//            if (!task.isSuccessful) {
-//                task.exception?.let { throw it }
-//            }
-//            fileRef.downloadUrl
-//        }.addOnCompleteListener { task ->
-//            val imageUrl = task.result.toString()
-//            val post = Post(auth.currentUser!!.uid,
-//                viewBinding.captionInput.text.toString(), path
-//            )
-//
-//            db.collection("posts").document(postId).set(post, SetOptions.merge())
-//                .addOnSuccessListener {
-//                    Toast.makeText(requireContext(), "Post uploaded successfully", Toast.LENGTH_LONG).show()
-//
-//                }
-//                .addOnFailureListener { exception ->
-//                    Toast.makeText(requireContext(), "Failed to upload post: ${exception.message}", Toast.LENGTH_SHORT).show()
-//                }
-//
-//                }
-//                        .addOnFailureListener { exception ->
-//                            Toast.makeText(
-//                                requireContext(),
-//                                "Failed to upload post: ${exception.message}",
-//                                Toast.LENGTH_SHORT
-//                            ).show()
-//                        }
-//            .addOnFailureListener {
-//            Toast.makeText(requireContext(), "Failed to upload image: ${it.message}", Toast.LENGTH_SHORT).show()
-//        }
     }
     companion object {
         fun newInstance(imageUri: Uri): AddPostFragment {

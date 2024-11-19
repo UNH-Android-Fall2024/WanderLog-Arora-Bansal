@@ -31,9 +31,6 @@ import androidx.camera.core.ImageCaptureException
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
 
-
-typealias LumaListener = (luma: Double) -> Unit
-
 class CameraFragment : Fragment() {
 
     private lateinit var viewBinding: FragmentCameraBinding
