@@ -14,6 +14,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.camera.core.ImageCapture
 import android.widget.Toast
@@ -27,13 +28,13 @@ import java.util.Locale
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.camera.core.ImageCaptureException
-
-
-typealias LumaListener = (luma: Double) -> Unit
+import androidx.navigation.fragment.findNavController
+import com.example.wanderlog.R
 
 class CameraFragment : Fragment() {
 
     private lateinit var viewBinding: FragmentCameraBinding
+    private var savedImageUri: Uri? = null
 
     private var imageCapture: ImageCapture? = null
 
@@ -60,7 +61,7 @@ class CameraFragment : Fragment() {
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
-                openGallery() // If permission is granted, open the gallery
+                openGallery()
             } else {
                 Toast.makeText(requireContext(), "Gallery permission denied", Toast.LENGTH_SHORT).show()
             }
@@ -72,12 +73,19 @@ class CameraFragment : Fragment() {
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
                 val selectedImageUri = result.data?.data
-                // Handle the selected image here
+                if (selectedImageUri!=null){
+                    val bundle = Bundle().apply{
+                        putParcelable("imageUri", selectedImageUri)
+                    }
+                    findNavController().navigate(
+                        R.id.action_navigation_camera_to_addPostFragment2,
+                        bundle
+                    )
+                }
                 Toast.makeText(requireContext(), "Selected Image: $selectedImageUri", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Request camera permissions
         if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -113,15 +121,14 @@ class CameraFragment : Fragment() {
         }
 
     private fun rotateCamera(){
-        cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
-            CameraSelector.DEFAULT_FRONT_CAMERA
+        if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA)
+            cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
         else
-            CameraSelector.DEFAULT_BACK_CAMERA
+            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
         startCamera()
     }
 
-    // check if gallery permission is granted
     private fun checkGalleryPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // For Android 13 and above
@@ -151,7 +158,7 @@ class CameraFragment : Fragment() {
     }
 
 
-    // function for Gallery opening
+
     private fun openGallery(){
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -169,19 +176,16 @@ class CameraFragment : Fragment() {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/")
             }
         }
 
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(requireContext().contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 contentValues)
             .build()
 
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(requireContext()), // Use requireContext()
@@ -190,10 +194,19 @@ class CameraFragment : Fragment() {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
-                override fun onImageSaved(output: ImageCapture.OutputFileResults){
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show() // Use requireContext()
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    savedImageUri = output.savedUri
+                    val msg = "Photo capture succeeded: $savedImageUri"
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
+
+                    val bundle = Bundle().apply {
+                        putParcelable("imageUri", savedImageUri)
+                    }
+                    findNavController().navigate(
+                        R.id.action_navigation_camera_to_addPostFragment2,
+                        bundle
+                    )
                 }
             }
         )
@@ -203,10 +216,8 @@ class CameraFragment : Fragment() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener({
-            // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Preview
             val preview = Preview.Builder()
                 .build()
                 .also {
@@ -216,14 +227,10 @@ class CameraFragment : Fragment() {
             imageCapture = ImageCapture.Builder()
                 .build()
 
-            // Select back camera as a default
-            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
-                // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
 
-                // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture)
 

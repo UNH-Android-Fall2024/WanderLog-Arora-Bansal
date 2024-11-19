@@ -26,4 +26,10 @@
     <string name="don_t_have_an_account">Don\'t have an account? </string>
     <string name="sign_up_link">Sign Up</string>
     <string name="logo_image_description">Logo Image</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_location">Add Location</string>
+    <string name="write_a_caption">Write a caption...</string>
+    <string name="post">Post</string>
+    <string name="image_view">image view</string>
+    <string name="add_post">Add Post</string>
 </resources>
