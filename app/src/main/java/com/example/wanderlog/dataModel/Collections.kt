@@ -11,14 +11,13 @@ class User (
 }
 
 class Post (
+    var postID: String = "",
     val userID: String = "",
     val content: String = "",
-    val imageUrl: String = "",
     val comments: ArrayList<HashMap<String,String>> = ArrayList(),
     val likes: ArrayList<String> = ArrayList(),
     val location: ArrayList<String> = ArrayList(),
-    var postID: String = "",
-    )
+    val imageUrl: String = "")
 
 class Connection (
     val userID1: String = "",
@@ -31,6 +30,6 @@ class Location (
     val userID: String = "",
     val city: String = "",
     val country: String = "",
-    val latitude: Int = 0,
-    val longitude: Int = 0,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     val visited: Boolean = false)

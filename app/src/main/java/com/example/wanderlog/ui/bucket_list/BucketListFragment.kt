@@ -7,13 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.databinding.FragmentBucketListBinding
 import com.example.wanderlog.dataModel.BucketListAdapter
 import com.example.wanderlog.dataModel.Location
-import com.example.wanderlog.dataModel.Post
 import com.example.wanderlog.databinding.DialogAddBlItemBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -86,8 +83,8 @@ class BucketListFragment : Fragment() {
                 "city" to city,
                 "country" to country,
                 "userID" to auth.currentUser!!.uid,
-                "latitude" to 0,
-                "longitude" to 0,
+                "latitude" to 0.0,
+                "longitude" to 0.0,
                 "visited" to false
             )
             if (country.isNotEmpty() && city.isNotEmpty()) {
@@ -95,7 +92,7 @@ class BucketListFragment : Fragment() {
                 db.collection("locations")
                     .add(location)
                     .addOnSuccessListener { documentReference ->
-                        bucketListItems.add(Location(documentReference.id,auth.currentUser!!.uid,city,country,0,0,false))
+                        bucketListItems.add(Location(documentReference.id,auth.currentUser!!.uid,city,country,0.0,0.0,false))
                         Log.d("AddLocation", "DocumentSnapshot written with ID: ${documentReference.id}")
                         adapter.notifyDataSetChanged()
 

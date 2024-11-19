@@ -14,14 +14,4 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Location 1" />
-
-    <TextView
-        android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete"
-        android:textColor="@android:color/holo_red_dark"
-        android:padding="8dp"
-        android:visibility="gone"
-        android:background="?android:attr/selectableItemBackground" />
 </LinearLayout>
