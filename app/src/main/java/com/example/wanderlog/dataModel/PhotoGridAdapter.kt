@@ -71,6 +71,10 @@ class PhotoGridAdapter(
             putString("caption", post.content)
             putString("postID", post.postID)
             putString("userID", post.userID)
+            if (post.location.size>0) {
+                putDouble("latitude", post.location[0])
+                putDouble("longitude", post.location[1])
+            }
             if(post.userID in post.likes){
                 putBoolean("liked", true )
             }
