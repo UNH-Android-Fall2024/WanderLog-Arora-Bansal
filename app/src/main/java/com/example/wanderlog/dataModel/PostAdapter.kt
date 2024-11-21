@@ -3,7 +3,10 @@ package com.example.wanderlog.dataModel
 import androidx.fragment.app.Fragment
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +24,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.storage
 import java.io.File
+import java.util.Locale
 
 
 class PostAdapter(
@@ -40,6 +44,7 @@ class PostAdapter(
         val likeButton: ImageView = itemView.findViewById(R.id.likeButton)
         val likedButton: ImageView = itemView.findViewById(R.id.likedButton)
         val commentButton: ImageView = itemView.findViewById(R.id.commentButton)
+        val locationText: TextView = itemView.findViewById(R.id.location)
 
 
 
@@ -78,7 +83,12 @@ class PostAdapter(
                     }
                 }
             }
-
+        if(post.location.size>0){
+            getLocationFromCoordinates(holder, post.location[0], post.location[1])
+        }
+        else{
+            holder.locationText.visibility = View.GONE
+        }
         if (post.imageUrl!="") {
             val storageRef = storage.reference.child(post.imageUrl.toString())
             val localFile = File.createTempFile(
@@ -132,6 +142,50 @@ class PostAdapter(
             bottomSheetFragment.show(fragment.parentFragmentManager,"Comment Box")
         }
     }
+    private fun getLocationFromCoordinates(holder: PostViewHolder, latitude: Double, longitude: Double) {
+        val geocoder by lazy { Geocoder(holder.itemView.context, Locale.getDefault()) }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                geocoder.getFromLocation(latitude, longitude, 1) { addresses ->
+                    if (addresses.isNotEmpty()) {
+                        val address = addresses[0]
+                        val state = address.adminArea
+                        val country = address.countryName
+                        holder.itemView.post {
+                            if (state != null && country != null) {
+                                holder.locationText.visibility = View.VISIBLE
+                                holder.locationText.text = "$state, $country"
+                            } else {
+                                holder.locationText.visibility = View.GONE
+                            }
+                        }
+                    }
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                if (!addresses.isNullOrEmpty()) {
+                    val address = addresses[0]
+                    val state = address.adminArea
+                    val country = address.countryName
+                    holder.itemView.post {
+                        if (state != null && country != null) {
+                            holder.locationText.visibility = View.VISIBLE
+                            holder.locationText.text = "$state, $country"
+                        } else {
+                            holder.locationText.visibility = View.GONE
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("PostDetail", "Error getting location name", e)
+            holder.itemView.post {
+                holder.locationText.visibility = View.GONE
+            }
+        }
+    }
+
 
     override fun getItemCount(): Int {
         return postList.size
