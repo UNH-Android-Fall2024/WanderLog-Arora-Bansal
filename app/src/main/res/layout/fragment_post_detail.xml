@@ -1,44 +1,142 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    card_view:cardCornerRadius="8dp"
+    card_view:cardElevation="4dp">
 
-    <!-- User Profile Image -->
-    <ImageView
-        android:id="@+id/profileImageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_margin="16dp"
-        android:contentDescription="Profile Image"
-        android:src="@drawable/baseline_person_24" />
-
-    <!-- Username -->
-    <TextView
-        android:id="@+id/usernameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Username"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <!-- Post Image -->
-    <ImageView
-        android:id="@+id/postImageView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:scaleType="centerCrop"
-        android:contentDescription="Post image" />
-
-    <!-- Likes and Comments -->
-    <TextView
-        android:id="@+id/likesTextView"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1,234 likes" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/commentsTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View all comments" />
-</LinearLayout>
+        <!-- User info (profile picture and username) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/profileImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/baseline_person_24"
+                android:scaleType="centerCrop"
+                android:layout_marginEnd="8dp"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="City, Country"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Post image -->
+        <ImageView
+            android:id="@+id/postImage"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/baseline_image_24" />
+
+        <!-- Actions: Like, Comment, Share -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="start">
+
+            <ImageView
+                android:id="@+id/likeButton"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/baseline_thumb_up_24"
+                android:layout_marginEnd="16dp" />
+            <ImageView
+                android:id="@+id/likedButton"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/baseline_thumb_up_24_blue"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/commentButton"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/baseline_comment"
+                android:layout_marginEnd="16dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- Likes count and post description -->
+            <TextView
+                android:id="@+id/likeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100 likes"
+                android:textStyle="bold"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+            <TextView
+                android:id="@+id/viewComments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2 comments"
+                android:textStyle="bold"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/postUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="username"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:layout_marginTop="4dp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/postDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="This is a sample description of the post."
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- View all comments link -->
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

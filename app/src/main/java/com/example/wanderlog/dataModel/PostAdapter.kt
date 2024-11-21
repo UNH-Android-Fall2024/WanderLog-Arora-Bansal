@@ -78,6 +78,7 @@ class PostAdapter(
                     }
                 }
             }
+
         if (post.imageUrl!="") {
             val storageRef = storage.reference.child(post.imageUrl.toString())
             val localFile = File.createTempFile(
