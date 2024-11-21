@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- Image and Title -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_gravity="center"
+        android:src="@drawable/wanderlog_logo"
+        android:contentDescription="World Map Image"
+        android:scaleType="fitCenter" />
+
+
+
+    <!-- Instruction Text -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create a Bucket List to begin"
+        android:textSize="18sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:textColor="@android:color/black" />
+
+    <!-- Bucket List Item -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bucket List Item 1:"
+        android:textSize="16sp"
+        android:layout_marginTop="24dp"
+        android:textColor="@android:color/black" />
+
+    <!-- Country and City Inputs -->
+    <EditText
+        android:id="@+id/country_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Country"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@android:color/darker_gray"
+        android:padding="12dp" />
+
+    <EditText
+        android:id="@+id/city_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="City"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@android:color/darker_gray"
+        android:padding="12dp" />
+
+    <!-- Sign Up Button -->
+    <Button
+        android:id="@+id/signup_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Up"
+        android:layout_marginTop="32dp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/purple_500"
+        android:padding="12dp" />
+</LinearLayout>

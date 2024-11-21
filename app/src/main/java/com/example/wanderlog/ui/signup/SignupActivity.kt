@@ -188,7 +188,7 @@ class SignupActivity : AppCompatActivity() {
         if (user != null) {
             val myIntent = Intent(
                 this@SignupActivity,
-                LoginActivity::class.java
+                CreateBucketList::class.java
             )
             startActivity(myIntent)
         } else {
