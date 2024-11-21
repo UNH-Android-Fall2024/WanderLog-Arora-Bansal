@@ -75,7 +75,9 @@ class HomeFragment : Fragment() {
             }
         }
 
-
+    binding.btnSearch.setOnClickListener {
+        findNavController().navigate(R.id.action_navigation_home_to_searchNavigation)
+    }
 
 
     recyclerView = binding.recyclerView
