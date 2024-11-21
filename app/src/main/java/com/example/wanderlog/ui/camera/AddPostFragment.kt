@@ -88,7 +88,7 @@ class AddPostFragment : Fragment() {
         val riversRef = storageRef.child(postPath)
         val uploadTask = riversRef.putFile(imageUri!!)
 
-        val locationList = arrayListOf("$latitude", "$longitude")
+        val locationList = arrayListOf(latitude, longitude)
 
         uploadTask.addOnFailureListener {
             Log.d("uploadedfail",postPath)

@@ -16,6 +16,9 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import java.io.File
+import android.location.Geocoder
+import java.util.Locale
+import android.os.Build
 
 class PostDetailFragment : Fragment() {
 
@@ -23,6 +26,7 @@ class PostDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private var storage = Firebase.storage
     private val db = Firebase.firestore
+    private val geocoder by lazy { Geocoder(requireContext(), Locale.getDefault()) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +49,17 @@ class PostDetailFragment : Fragment() {
         val caption = arguments?.getString("caption")
         val liked = arguments?.getBoolean("liked")
         val profilePicture = arguments?.getString("profilePic")
+        val latitude = arguments?.getDouble("latitude") ?: 0.0
+        val longitude = arguments?.getDouble("longitude") ?: 0.0
 
+
+        if (latitude != 0.0 && longitude != 0.0) {
+            getLocationFromCoordinates(latitude, longitude)
+        } else {
+            binding.location.visibility = View.GONE
+        }
+
+        
         if (liked!!){
             binding.likeButton.visibility = View.GONE
             binding.likedButton.visibility = View.VISIBLE
@@ -89,6 +103,8 @@ class PostDetailFragment : Fragment() {
             likes = likes!!+1
             binding.likeCount.text = "${likes.toString()} Likes"
         }
+
+
         binding.likedButton.setOnClickListener{
             if (postID != null) {
                 db.collection("posts").document(postID).update("likes", FieldValue.arrayRemove(userID))
@@ -102,6 +118,45 @@ class PostDetailFragment : Fragment() {
         binding.commentButton.setOnClickListener{
             val bottomSheetFragment = CommentBottomSheetFragment.newInstance(postID!!)
             bottomSheetFragment.show(parentFragmentManager,"Comment Box")
+        }
+    }
+
+    private fun getLocationFromCoordinates(latitude: Double, longitude: Double) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                geocoder.getFromLocation(latitude, longitude, 1) { addresses ->
+                    activity?.runOnUiThread {
+                        if (addresses.isNotEmpty()) {
+                            val address = addresses[0]
+                            val state = address.adminArea
+                            val country = address.countryName
+                            if (state != null && country != null) {
+                                binding.location.visibility = View.VISIBLE
+                                binding.location.text = "$state, $country"
+                            } else {
+                                binding.location.visibility = View.GONE
+                            }
+                        }
+                    }
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                if (!addresses.isNullOrEmpty()) {
+                    val address = addresses[0]
+                    val state = address.adminArea
+                    val country = address.countryName
+                    if (state != null && country != null) {
+                        binding.location.visibility = View.VISIBLE
+                        binding.location.text = "$state, $country"
+                    } else {
+                        binding.location.visibility = View.GONE
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("PostDetail", "Error getting location name", e)
+            binding.location.visibility = View.GONE
         }
     }
 

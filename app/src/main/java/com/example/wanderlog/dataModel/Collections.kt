@@ -16,7 +16,7 @@ class Post (
     val content: String = "",
     val comments: ArrayList<HashMap<String,String>> = ArrayList(),
     val likes: ArrayList<String> = ArrayList(),
-    val location: ArrayList<String> = ArrayList(),
+    val location: ArrayList<Double> = ArrayList(),
     val imageUrl: String = "")
 
 class Connection (
