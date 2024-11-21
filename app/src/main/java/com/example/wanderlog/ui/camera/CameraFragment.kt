@@ -30,6 +30,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.camera.core.ImageCaptureException
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
+import com.example.wanderlog.ui.bucket_list.LocationHelper
 
 class CameraFragment : Fragment() {
 
@@ -44,12 +45,18 @@ class CameraFragment : Fragment() {
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    private lateinit var locationHelper: LocationHelper
+
+    private var currentLatitude: Double? = null
+    private var currentLongitude: Double? = null
+
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        locationHelper = LocationHelper(requireContext())
         viewBinding = FragmentCameraBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
@@ -76,6 +83,8 @@ class CameraFragment : Fragment() {
                 if (selectedImageUri!=null){
                     val bundle = Bundle().apply{
                         putParcelable("imageUri", selectedImageUri)
+                        putDouble("latitude", currentLatitude ?: 0.0)
+                        putDouble("longitude", currentLongitude ?: 0.0)
                     }
                     findNavController().navigate(
                         R.id.action_navigation_camera_to_addPostFragment2,
@@ -87,11 +96,13 @@ class CameraFragment : Fragment() {
         }
 
         if (allPermissionsGranted()) {
+            startLocationUpdates()
+
             startCamera()
         } else {
             requestPermissions()
         }
-        // Set up the listeners for take photo and other operations
+        Log.d("Camera1", "Current location - Lat: $currentLatitude, Long: $currentLongitude")
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
 
         viewBinding.imagePickerButton.setOnClickListener { checkGalleryPermission() }
@@ -101,22 +112,40 @@ class CameraFragment : Fragment() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
+    private fun startLocationUpdates() {
+        Log.d("Camera1", "startLocationUpdates: Requesting location updates")
+        locationHelper.getCurrentLocation { location ->
+            location?.let {
+                currentLatitude = it.latitude
+                currentLongitude = it.longitude
+                Log.i("Camera1", "Location successfully updated - Lat: ${it.latitude}, Long: ${it.longitude}")
+
+                activity?.runOnUiThread {
+                    viewBinding.imageCaptureButton.isEnabled = true
+                    Log.d("Camera1", "UI updated with new location")
+                }
+            } ?: run {
+                Log.e("Camera1", "Failed to get location")
+            }
+        }
+    }
+
     private val activityResultLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions())
         { permissions ->
-            // Handle Permission granted/rejected
-            var permissionGranted = true
+            var permissionGranted = false
             permissions.entries.forEach {
                 if (it.key in REQUIRED_PERMISSIONS && !it.value)
-                    permissionGranted = false
+                    permissionGranted = true
             }
             if (permissionGranted) {
-                Toast.makeText(requireContext(),
-                    "Permission request denied",
-                    Toast.LENGTH_SHORT).show()
-            } else {
+                startLocationUpdates()
                 startCamera()
+            } else {
+                Toast.makeText(requireContext(),
+                    "Permissions required for camera and location",
+                    Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -131,7 +160,7 @@ class CameraFragment : Fragment() {
 
     private fun checkGalleryPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // For Android 13 and above
+
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_MEDIA_IMAGES
@@ -139,11 +168,9 @@ class CameraFragment : Fragment() {
             ) {
                 openGallery()
             } else {
-                // Request permission for Android 13+
                 permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
             }
         } else {
-            // For below Android 13
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -151,7 +178,6 @@ class CameraFragment : Fragment() {
             ) {
                 openGallery()
             } else {
-                // Request permission for below Android 13
                 permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
@@ -166,10 +192,10 @@ class CameraFragment : Fragment() {
     }
 
     private fun takePhoto() {
-        // Get a stable reference of the modifiable image capture use case
+
         val imageCapture = imageCapture ?: return
 
-        // Create time stamped name and MediaStore entry.
+
         val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
         val contentValues = ContentValues().apply {
@@ -188,7 +214,7 @@ class CameraFragment : Fragment() {
 
         imageCapture.takePicture(
             outputOptions,
-            ContextCompat.getMainExecutor(requireContext()), // Use requireContext()
+            ContextCompat.getMainExecutor(requireContext()),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
@@ -202,6 +228,8 @@ class CameraFragment : Fragment() {
 
                     val bundle = Bundle().apply {
                         putParcelable("imageUri", savedImageUri)
+                        putDouble("latitude", currentLatitude ?: 0.0)
+                        putDouble("longitude", currentLongitude ?: 0.0)
                     }
                     findNavController().navigate(
                         R.id.action_navigation_camera_to_addPostFragment2,
@@ -252,6 +280,7 @@ class CameraFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        locationHelper.stopLocationUpdates()
         cameraExecutor.shutdown()
     }
 
@@ -261,7 +290,9 @@ class CameraFragment : Fragment() {
         private val REQUIRED_PERMISSIONS =
             mutableListOf (
                 Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE // for gallery
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
             ).apply {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
                     add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
