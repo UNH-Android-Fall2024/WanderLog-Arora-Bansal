@@ -4,7 +4,10 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -181,7 +184,7 @@ class EditProfileFragment : Fragment() {
                     )
                     storageRef.getFile(localFile).addOnSuccessListener {
                         // Local temp file has been created
-                        val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                        val bitmap = correctImageOrientationFromFile(localFile.toString())
                         binding.profilePictureImage.setImageBitmap(bitmap)
                     }.addOnFailureListener {
                         binding.profilePictureImage.setImageResource(R.drawable.baseline_person_24)
@@ -190,6 +193,36 @@ class EditProfileFragment : Fragment() {
             }
 
     }
+    private fun correctImageOrientationFromFile(imagePath: String): Bitmap? {
+        try {
+
+            val exifInterface = ExifInterface(imagePath)
+            val orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+
+            val bitmap = BitmapFactory.decodeFile(imagePath)
+
+
+            return when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+                else -> bitmap // No rotation needed
+            }
+        } catch (e: Exception) {
+            Log.e("ImageRotationError", "Error correcting image orientation: ${e.message}")
+        }
+        return null
+    }
+
+    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
 
     private fun storeUserData(uid: String, name: String, bio:String ){
         val submit = hashMapOf(

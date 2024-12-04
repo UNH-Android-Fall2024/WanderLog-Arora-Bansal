@@ -1,7 +1,10 @@
 package com.example.wanderlog.dataModel
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -50,7 +53,7 @@ class PhotoGridAdapter(
         )
         storageRef.getFile(localFile).addOnSuccessListener {
             // Local temp file has been created
-            val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+            val bitmap = correctImageOrientationFromFile(localFile.toString())
             holder.photoImageView.setImageBitmap(bitmap)
         }.addOnFailureListener {
             holder.photoImageView.setImageResource(R.drawable.baseline_image_24)
@@ -92,6 +95,35 @@ class PhotoGridAdapter(
 
         }
 
+    }
+    private fun correctImageOrientationFromFile(imagePath: String): Bitmap? {
+        try {
+
+            val exifInterface = ExifInterface(imagePath)
+            val orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+
+            val bitmap = BitmapFactory.decodeFile(imagePath)
+
+
+            return when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+                else -> bitmap // No rotation needed
+            }
+        } catch (e: Exception) {
+            Log.e("ImageRotationError", "Error correcting image orientation: ${e.message}")
+        }
+        return null
+    }
+
+    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     override fun getItemCount(): Int {

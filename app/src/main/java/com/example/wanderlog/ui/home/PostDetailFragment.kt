@@ -1,24 +1,28 @@
 package com.example.wanderlog.ui.home
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.FontRes
 import androidx.fragment.app.Fragment
 import com.example.wanderlog.R
 import com.example.wanderlog.databinding.PostCardLayoutBinding
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import java.io.File
 import android.location.Geocoder
+import android.net.Uri
 import java.util.Locale
 import android.os.Build
+import android.media.ExifInterface
+import java.io.InputStream
 
 class PostDetailFragment : Fragment() {
 
@@ -66,25 +70,28 @@ class PostDetailFragment : Fragment() {
         }
         binding.username.text = username
         Log.d("Post Detail", postImageUrl.toString())
+
         val storageRef = storage.reference.child(postImageUrl.toString())
         val localFile = File.createTempFile(
             "tempImage", ".jpg"
         )
         storageRef.getFile(localFile).addOnSuccessListener {
             // Local temp file has been created
-            val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+            val bitmap = correctImageOrientationFromFile(localFile.toString())
+
             binding.postImage.setImageBitmap(bitmap)
+
         }.addOnFailureListener {
             binding.postImage.setImageResource(R.drawable.baseline_image_24)
         }
         if(profilePicture!=""){
             val storageRef1 = storage.reference.child(profilePicture.toString())
             val localFile1 = File.createTempFile(
-                "tempImage1", ".jpg"
+                "tempImage1", ".jpeg"
             )
             storageRef1.getFile(localFile1).addOnSuccessListener {
                 // Local temp file has been created
-                val bitmap1 = BitmapFactory.decodeFile(localFile1.absolutePath)
+                val bitmap1 = correctImageOrientationFromFile(localFile1.toString())
                 binding.profileImage.setImageBitmap(bitmap1)
             }.addOnFailureListener {
                 binding.profileImage.setImageResource(R.drawable.baseline_person_24)
@@ -158,6 +165,36 @@ class PostDetailFragment : Fragment() {
             Log.e("PostDetail", "Error getting location name", e)
             binding.location.visibility = View.GONE
         }
+    }
+
+    private fun correctImageOrientationFromFile(imagePath: String): Bitmap? {
+        try {
+
+            val exifInterface = ExifInterface(imagePath)
+            val orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+
+            val bitmap = BitmapFactory.decodeFile(imagePath)
+
+
+            return when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+                else -> bitmap // No rotation needed
+            }
+        } catch (e: Exception) {
+            Log.e("ImageRotationError", "Error correcting image orientation: ${e.message}")
+        }
+        return null
+    }
+
+    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     override fun onDestroyView() {

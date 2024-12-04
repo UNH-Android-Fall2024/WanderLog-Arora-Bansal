@@ -2,8 +2,11 @@ package com.example.wanderlog.dataModel
 
 import androidx.fragment.app.Fragment
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.location.Geocoder
+import android.media.ExifInterface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -76,7 +79,7 @@ class PostAdapter(
                     )
                     storageRef1.getFile(localFile1).addOnSuccessListener {
                         // Local temp file has been created
-                        val bitmap = BitmapFactory.decodeFile(localFile1.absolutePath)
+                        val bitmap = correctImageOrientationFromFile(localFile1.toString())
                         holder.profileImageView.setImageBitmap(bitmap)
                     }.addOnFailureListener {
                         holder.profileImageView.setImageResource(R.drawable.baseline_image_24)
@@ -96,7 +99,7 @@ class PostAdapter(
             )
             storageRef.getFile(localFile).addOnSuccessListener {
                 // Local temp file has been created
-                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                val bitmap = correctImageOrientationFromFile(localFile.toString())
                 holder.postImageView.setImageBitmap(bitmap)
             }.addOnFailureListener {
                 holder.postImageView.setImageResource(R.drawable.baseline_image_24)
@@ -184,6 +187,36 @@ class PostAdapter(
                 holder.locationText.visibility = View.GONE
             }
         }
+    }
+
+    private fun correctImageOrientationFromFile(imagePath: String): Bitmap? {
+        try {
+
+            val exifInterface = ExifInterface(imagePath)
+            val orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+
+            val bitmap = BitmapFactory.decodeFile(imagePath)
+
+
+            return when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+                else -> bitmap // No rotation needed
+            }
+        } catch (e: Exception) {
+            Log.e("ImageRotationError", "Error correcting image orientation: ${e.message}")
+        }
+        return null
+    }
+
+    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
 
