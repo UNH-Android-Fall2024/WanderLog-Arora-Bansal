@@ -32,4 +32,4 @@ class Location (
     val country: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val visited: Boolean = false)
+    var visited: Boolean = false)
