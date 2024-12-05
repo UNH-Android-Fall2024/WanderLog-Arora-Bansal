@@ -4,6 +4,7 @@ package com.example.wanderlog.ui.profile
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+//noinspection ExifInterface
 import android.media.ExifInterface
 import android.os.Bundle
 import android.util.Log
@@ -13,9 +14,6 @@ import androidx.core.content.ContextCompat
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
 import com.example.wanderlog.dataModel.Location
@@ -53,7 +51,7 @@ class ProfileFragment : Fragment() {
     private var auth = Firebase.auth
     private lateinit var mapView: MapView
     private companion object {
-        private const val ZOOM = 0.45
+        private const val ZOOM = 0.80
         private val CENTER = Point.fromLngLat(30.0, 50.0)
         private val markerCoordinates = arrayListOf<Point>()
 
@@ -168,13 +166,13 @@ class ProfileFragment : Fragment() {
                 }
             )
             loadStyle(
-                style(Style.SATELLITE_STREETS) {
+                style(Style.LIGHT) {
                     +atmosphere { }
                     +projection(ProjectionName.GLOBE)
                     // prepare blue marker from resources
                     +image(
                         BLUE_ICON_ID,
-                        ContextCompat.getDrawable(requireContext(),R.drawable.baseline_location_pin_24)!!.toBitmap()
+                        ContextCompat.getDrawable(requireContext(),R.drawable.baseline_location_pin_24_blue)!!.toBitmap()
                     )
                     +geoJsonSource(SOURCE_ID) {
                         featureCollection(

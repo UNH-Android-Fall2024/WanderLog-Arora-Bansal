@@ -21,6 +21,7 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import android.location.Geocoder
+import com.example.wanderlog.ui.bucket_list.LocationHelper
 import java.util.Locale
 
 class AddPostFragment : Fragment() {
@@ -32,18 +33,19 @@ class AddPostFragment : Fragment() {
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private val geocoder by lazy { Geocoder(requireContext(), Locale.getDefault()) }
-
+    private lateinit var locationHelper: LocationHelper
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        locationHelper = LocationHelper(requireContext())
         viewBinding = FragmentAddPostBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        startLocationUpdates()
 
         imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable("imageUri", Uri::class.java)
@@ -60,10 +62,11 @@ class AddPostFragment : Fragment() {
 
         latitude = arguments?.getDouble("latitude", 0.0) ?: 0.0
         longitude = arguments?.getDouble("longitude", 0.0) ?: 0.0
+        Log.i("Camera1", "Location successfully updated - Lat: ${latitude}, Long: ${longitude}")
 
-        if (latitude != 0.0 && longitude != 0.0) {
-            updateLocationField()
-        }
+//        if (latitude != 0.0 && longitude != 0.0) {
+//            updateLocationField()
+//        }
 
 
         viewBinding.postButton.setOnClickListener {
@@ -71,7 +74,24 @@ class AddPostFragment : Fragment() {
         }
     }
 
-
+    private fun startLocationUpdates() {
+        Log.d("Camera1", "startLocationUpdates: Requesting location updates")
+        locationHelper.getCurrentLocation { location ->
+            location?.let {
+                latitude = it.latitude
+                longitude = it.longitude
+                Log.i("Camera12", "Location successfully updated - Lat: ${it.latitude}, Long: ${it.longitude}")
+                updateLocationField(latitude, longitude)
+                activity?.runOnUiThread {
+                    viewBinding.postButton.isEnabled = true
+                    viewBinding.locationInput.text = "$latitude,$longitude"
+                    Log.d("Camera1", "UI updated with new location")
+                }
+            } ?: run {
+                Log.e("Camera1", "Failed to get location")
+            }
+        }
+    }
 
     private fun uploadPost() {
         if (imageUri == null) {
@@ -107,10 +127,10 @@ class AddPostFragment : Fragment() {
         }
     }
 
-    private fun updateLocationField() {
+    private fun updateLocationField(latitude1: Double, longitude1: Double) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                geocoder.getFromLocation(latitude, longitude, 1) { addresses ->
+                geocoder.getFromLocation(latitude1, longitude1, 1) { addresses ->
                     activity?.runOnUiThread {
                         val locationText = if (addresses.isNotEmpty()) {
                             val address = addresses[0]
@@ -118,7 +138,7 @@ class AddPostFragment : Fragment() {
                         } else {
                             "$latitude, $longitude"
                         }
-                        viewBinding.locationInput.setText(locationText)
+                        viewBinding.locationInput.text = locationText
                     }
                 }
             } else {
