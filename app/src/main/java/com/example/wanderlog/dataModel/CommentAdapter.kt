@@ -8,14 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
 
-
-// In your Kotlin code:
 class CommentAdapter(
     private val comments: ArrayList<HashMap<String,String>>
 ) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
     inner class CommentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val commentusername : TextView = itemView.findViewById(R.id.commentUsername)
+        val commentUsername : TextView = itemView.findViewById(R.id.commentUsername)
         val textComment: TextView = itemView.findViewById(R.id.textComment)
     }
 
@@ -26,7 +24,7 @@ class CommentAdapter(
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val comment = comments[position]
-        holder.commentusername.text = comment["username"]
+        holder.commentUsername.text = comment["username"]
         holder.textComment.text = comment["comment"]
         Log.d("Comment", comment.toString())
 

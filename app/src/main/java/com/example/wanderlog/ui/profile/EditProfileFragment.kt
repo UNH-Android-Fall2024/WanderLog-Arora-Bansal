@@ -35,7 +35,6 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.storage
 import java.io.File
 
-
 class EditProfileFragment : Fragment() {
     private var _binding: FragmentEditProfileBinding? = null
     private val binding get() = _binding!!
@@ -49,7 +48,6 @@ class EditProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         _binding = FragmentEditProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -114,12 +112,9 @@ class EditProfileFragment : Fragment() {
         val uploadTask = riversRef.putFile(image)
         Log.d("uploaded",image.toString())
 
-        // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener {
             Log.d("uploadedfail","profile/${auth.currentUser!!.uid}.jpg")
         }.addOnSuccessListener { taskSnapshot ->
-            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-            // ...
             val submit = hashMapOf(
                 "profilePicture" to "profile/${auth.currentUser!!.uid}.jpg"
             )
@@ -129,22 +124,18 @@ class EditProfileFragment : Fragment() {
 
         }
     }
-    // check if gallery permission is granted
     private fun checkGalleryPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // For Android 13 and above
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
-                    Manifest.permission.READ_MEDIA_IMAGES
-                ) == PackageManager.PERMISSION_GRANTED
+                    Manifest.permission.READ_MEDIA_IMAGES)
+                == PackageManager.PERMISSION_GRANTED
             ) {
                 openGallery()
             } else {
-                // Request permission for Android 13+
                 permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
             }
         } else {
-            // For below Android 13
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_EXTERNAL_STORAGE
@@ -152,19 +143,15 @@ class EditProfileFragment : Fragment() {
             ) {
                 openGallery()
             } else {
-                // Request permission for below Android 13
                 permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
     }
 
     private fun openGallery(){
-
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         galleryLauncher.launch(intent)
-
-
     }
 
 
@@ -183,7 +170,6 @@ class EditProfileFragment : Fragment() {
                         "tempImage", ".jpg"
                     )
                     storageRef.getFile(localFile).addOnSuccessListener {
-                        // Local temp file has been created
                         val bitmap = correctImageOrientationFromFile(localFile.toString())
                         binding.profilePictureImage.setImageBitmap(bitmap)
                     }.addOnFailureListener {

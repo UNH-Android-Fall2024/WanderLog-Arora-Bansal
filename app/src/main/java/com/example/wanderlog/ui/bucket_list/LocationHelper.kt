@@ -5,24 +5,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 
 class LocationHelper(private val context: Context) {
-
     private var fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
-
     private var locationCallback: LocationCallback? = null
-
      private fun checkPermissions(): Boolean {
         return ActivityCompat.checkSelfPermission(
-            context, Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    context, Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
+            context, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED &&
+        ActivityCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
     @SuppressLint("MissingPermission")
@@ -32,14 +26,16 @@ class LocationHelper(private val context: Context) {
                 .addOnSuccessListener { location ->
                     if (location != null) {
                         onLocationReceived(location)
-                    } else {
+                    }
+                    else {
                         requestLocationUpdates(onLocationReceived)
                     }
                 }
                 .addOnFailureListener {
                     onLocationReceived(null)
                 }
-        } else {
+        }
+        else {
             onLocationReceived(null)
         }
     }
@@ -49,12 +45,10 @@ class LocationHelper(private val context: Context) {
             onLocationReceived(null)
             return
         }
-
         val locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY, 10000L
         ).setMinUpdateIntervalMillis(5000L)
             .build()
-
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 val location = locationResult.lastLocation
@@ -62,13 +56,11 @@ class LocationHelper(private val context: Context) {
                 stopLocationUpdates()
             }
         }
-
         try {
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback!!,
-                null
-            )
+                null)
         } catch (e: SecurityException) {
             onLocationReceived(null)
         }

@@ -79,16 +79,17 @@ class BucketListFragment : Fragment() {
         }
     }
 
-    private fun getLocationCoordinates(city: String, country: String, callback: (Double, Double) -> Unit) {
+    private fun getLocationCoordinates(
+        city: String,
+        country: String,
+        callback: (Double, Double) -> Unit
+    ) {
         try {
             val locationName = "$city, $country"
-            Log.d("Geocoding", "Attempting to get coordinates for: $locationName")
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocationName(locationName, 1) { addresses ->
                     val latitude = addresses.firstOrNull()?.latitude ?: 0.0
                     val longitude = addresses.firstOrNull()?.longitude ?: 0.0
-                    Log.d("Geocoding", "Found coordinates for $locationName: $latitude, $longitude")
                     activity?.runOnUiThread {
                         callback(latitude, longitude)
                     }
@@ -98,7 +99,6 @@ class BucketListFragment : Fragment() {
                 val addresses = geocoder.getFromLocationName(locationName, 1)
                 val latitude = addresses?.firstOrNull()?.latitude ?: 0.0
                 val longitude = addresses?.firstOrNull()?.longitude ?: 0.0
-                Log.d("Geocoding", "Found coordinates for $locationName: $latitude, $longitude")
                 callback(latitude, longitude)
             }
         } catch (e: Exception) {
@@ -141,7 +141,10 @@ class BucketListFragment : Fragment() {
                                 visited = false
                             )
                             bucketListItems.add(newLocation)
-                            Log.d("AddLocation", "Added location with ID: ${documentReference.id}, Lat: $latitude, Long: $longitude")
+                            Log.d(
+                                "AddLocation",
+                                "Added location with ID: ${documentReference.id}, Lat: $latitude, Long: $longitude"
+                            )
                             activity?.runOnUiThread {
                                 adapter.notifyDataSetChanged()
                             }
@@ -152,24 +155,20 @@ class BucketListFragment : Fragment() {
                     dialog.dismiss()
                 }
             } else {
-                dialogBinding.editTextCountry.error = if (country.isEmpty()) "Please enter a country" else null
-                dialogBinding.editTextCity.error = if (city.isEmpty()) "Please enter a city" else null
+                dialogBinding.editTextCountry.error =
+                    if (country.isEmpty()) "Please enter a country" else null
+                dialogBinding.editTextCity.error =
+                    if (city.isEmpty()) "Please enter a city" else null
             }
         }
-
         dialogBinding.buttonCancel.setOnClickListener {
             dialog.dismiss()
         }
-
         dialog.show()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val TAG = "BucketListFragment"
     }
 }

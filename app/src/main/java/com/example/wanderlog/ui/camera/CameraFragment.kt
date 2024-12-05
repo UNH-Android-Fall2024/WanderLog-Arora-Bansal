@@ -30,7 +30,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.camera.core.ImageCaptureException
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
-import com.example.wanderlog.ui.bucket_list.LocationHelper
 
 class CameraFragment : Fragment() {
 
@@ -45,18 +44,11 @@ class CameraFragment : Fragment() {
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    private lateinit var locationHelper: LocationHelper
-
-    private var currentLatitude: Double? = null
-    private var currentLongitude: Double? = null
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        locationHelper = LocationHelper(requireContext())
         viewBinding = FragmentCameraBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
@@ -83,51 +75,24 @@ class CameraFragment : Fragment() {
                 if (selectedImageUri!=null){
                     val bundle = Bundle().apply{
                         putParcelable("imageUri", selectedImageUri)
-                        putDouble("latitude", currentLatitude ?: 0.0)
-                        putDouble("longitude", currentLongitude ?: 0.0)
                     }
                     findNavController().navigate(
                         R.id.action_navigation_camera_to_addPostFragment2,
                         bundle
                     )
                 }
-                Toast.makeText(requireContext(), "Selected Image: $selectedImageUri", Toast.LENGTH_SHORT).show()
             }
         }
 
         if (allPermissionsGranted()) {
-            startLocationUpdates()
-
             startCamera()
         } else {
             requestPermissions()
         }
-        Log.d("Camera1", "Current location - Lat: $currentLatitude, Long: $currentLongitude")
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
-
         viewBinding.imagePickerButton.setOnClickListener { checkGalleryPermission() }
-
         viewBinding.rotateCameraButton.setOnClickListener{ rotateCamera()}
-
         cameraExecutor = Executors.newSingleThreadExecutor()
-    }
-
-    private fun startLocationUpdates() {
-        Log.d("Camera1", "startLocationUpdates: Requesting location updates")
-        locationHelper.getCurrentLocation { location ->
-            location?.let {
-                currentLatitude = it.latitude
-                currentLongitude = it.longitude
-                Log.i("Camera1", "Location successfully updated - Lat: ${it.latitude}, Long: ${it.longitude}")
-
-                activity?.runOnUiThread {
-                    viewBinding.imageCaptureButton.isEnabled = true
-                    Log.d("Camera1", "UI updated with new location")
-                }
-            } ?: run {
-                Log.e("Camera1", "Failed to get location")
-            }
-        }
     }
 
     private val activityResultLauncher =
@@ -140,7 +105,6 @@ class CameraFragment : Fragment() {
                     permissionGranted = true
             }
             if (permissionGranted) {
-                startLocationUpdates()
                 startCamera()
             } else {
                 Toast.makeText(requireContext(),
@@ -183,8 +147,6 @@ class CameraFragment : Fragment() {
         }
     }
 
-
-
     private fun openGallery(){
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -192,10 +154,7 @@ class CameraFragment : Fragment() {
     }
 
     private fun takePhoto() {
-
         val imageCapture = imageCapture ?: return
-
-
         val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
         val contentValues = ContentValues().apply {
@@ -205,13 +164,10 @@ class CameraFragment : Fragment() {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/")
             }
         }
-
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(requireContext().contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues)
-            .build()
-
+                contentValues).build()
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(requireContext()),
@@ -219,17 +175,10 @@ class CameraFragment : Fragment() {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
-
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     savedImageUri = output.savedUri
-                    val msg = "Photo capture succeeded: $savedImageUri"
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
-
                     val bundle = Bundle().apply {
                         putParcelable("imageUri", savedImageUri)
-                        putDouble("latitude", currentLatitude ?: 0.0)
-                        putDouble("longitude", currentLongitude ?: 0.0)
                     }
                     findNavController().navigate(
                         R.id.action_navigation_camera_to_addPostFragment2,
@@ -245,27 +194,18 @@ class CameraFragment : Fragment() {
 
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
             val preview = Preview.Builder()
-                .build()
-                .also {
+                .build().also {
                     it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
                 }
-
-            imageCapture = ImageCapture.Builder()
-                .build()
-
-
+            imageCapture = ImageCapture.Builder().build()
             try {
                 cameraProvider.unbindAll()
-
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture)
-
             } catch(exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
-
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
@@ -280,7 +220,6 @@ class CameraFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        locationHelper.stopLocationUpdates()
         cameraExecutor.shutdown()
     }
 

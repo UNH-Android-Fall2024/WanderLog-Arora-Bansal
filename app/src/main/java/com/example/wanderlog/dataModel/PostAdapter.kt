@@ -152,7 +152,7 @@ class PostAdapter(
                 geocoder.getFromLocation(latitude, longitude, 1) { addresses ->
                     if (addresses.isNotEmpty()) {
                         val address = addresses[0]
-                        val state = address.adminArea
+                        val state = address.subAdminArea
                         val country = address.countryName
                         holder.itemView.post {
                             if (state != null && country != null) {
@@ -169,7 +169,7 @@ class PostAdapter(
                 val addresses = geocoder.getFromLocation(latitude, longitude, 1)
                 if (!addresses.isNullOrEmpty()) {
                     val address = addresses[0]
-                    val state = address.adminArea
+                    val state = address.subAdminArea
                     val country = address.countryName
                     holder.itemView.post {
                         if (state != null && country != null) {

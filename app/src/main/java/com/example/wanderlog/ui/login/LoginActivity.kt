@@ -23,13 +23,13 @@ import com.google.firebase.auth.auth
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
+    private var auth = Firebase.auth
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        auth = Firebase.auth
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -109,16 +109,9 @@ class LoginActivity : AppCompatActivity() {
     }
     public override fun onStart() {
         super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            reload()
-        }
     }
-    // [END on_start_check_user]
 
     private fun signIn(email: String, password: String) {
-        // [START sign_in_with_email]
         Log.d("SignIn","reached function")
         try {
             auth.signInWithEmailAndPassword(email, password)
@@ -141,7 +134,6 @@ class LoginActivity : AppCompatActivity() {
         catch(e: Throwable){
             Log.d(TAG, "Email Not Found?")
         }
-        // [END sign_in_with_email]
     }
 
     private fun updateUI(user: FirebaseUser?) {
@@ -160,10 +152,6 @@ class LoginActivity : AppCompatActivity() {
 
         }
     }
-
-    private fun reload() {
-    }
-
     companion object {
         private const val TAG = "Login"
     }

@@ -10,7 +10,6 @@ import com.example.wanderlog.dataModel.CommentAdapter
 import com.example.wanderlog.dataModel.Post
 import com.example.wanderlog.dataModel.User
 import com.example.wanderlog.databinding.FragmentCommentBottomSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -25,12 +24,12 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
     private var auth = Firebase.auth
     private var username = ""
     private lateinit var commentAdapter: CommentAdapter
-    private var comments: ArrayList<HashMap<String,String>> = arrayListOf() // Pass this data to the fragment or fetch from ViewModel
+    private var comments: ArrayList<HashMap<String,String>> = arrayListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCommentBottomSheetBinding.inflate(inflater, container, false)
 
         val postID = arguments?.getString(ARG_POST_ID)

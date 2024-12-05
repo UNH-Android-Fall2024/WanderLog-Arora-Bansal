@@ -1,6 +1,5 @@
 package com.example.wanderlog.ui.home
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -18,11 +17,9 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import java.io.File
 import android.location.Geocoder
-import android.net.Uri
 import java.util.Locale
 import android.os.Build
 import android.media.ExifInterface
-import java.io.InputStream
 
 class PostDetailFragment : Fragment() {
 
@@ -35,7 +32,7 @@ class PostDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = PostCardLayoutBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -57,28 +54,24 @@ class PostDetailFragment : Fragment() {
         val longitude = arguments?.getDouble("longitude") ?: 0.0
 
 
+        // Set Location, Liked and User values to view
         if (latitude != 0.0 && longitude != 0.0) {
             getLocationFromCoordinates(latitude, longitude)
         } else {
             binding.location.visibility = View.GONE
         }
-
-        
         if (liked!!){
             binding.likeButton.visibility = View.GONE
             binding.likedButton.visibility = View.VISIBLE
         }
         binding.username.text = username
-        Log.d("Post Detail", postImageUrl.toString())
-
+        //Set User Profile and Post Images to View
         val storageRef = storage.reference.child(postImageUrl.toString())
         val localFile = File.createTempFile(
-            "tempImage", ".jpg"
+            "tempPostImage", ".jpg"
         )
         storageRef.getFile(localFile).addOnSuccessListener {
-            // Local temp file has been created
             val bitmap = correctImageOrientationFromFile(localFile.toString())
-
             binding.postImage.setImageBitmap(bitmap)
 
         }.addOnFailureListener {
@@ -87,10 +80,9 @@ class PostDetailFragment : Fragment() {
         if(profilePicture!=""){
             val storageRef1 = storage.reference.child(profilePicture.toString())
             val localFile1 = File.createTempFile(
-                "tempImage1", ".jpeg"
+                "tempProfileImage", ".jpg"
             )
             storageRef1.getFile(localFile1).addOnSuccessListener {
-                // Local temp file has been created
                 val bitmap1 = correctImageOrientationFromFile(localFile1.toString())
                 binding.profileImage.setImageBitmap(bitmap1)
             }.addOnFailureListener {
@@ -101,6 +93,8 @@ class PostDetailFragment : Fragment() {
         binding.viewComments.text = "${comments.toString()} Comments"
         binding.postDescription.text = caption
         binding.postUsername.text = username
+
+        //Add like button functionality
         binding.likeButton.setOnClickListener{
             if (postID != null) {
                 db.collection("posts").document(postID).update("likes", FieldValue.arrayUnion(userID))
@@ -111,7 +105,7 @@ class PostDetailFragment : Fragment() {
             binding.likeCount.text = "${likes.toString()} Likes"
         }
 
-
+        // Add unlike functionality
         binding.likedButton.setOnClickListener{
             if (postID != null) {
                 db.collection("posts").document(postID).update("likes", FieldValue.arrayRemove(userID))
@@ -122,12 +116,14 @@ class PostDetailFragment : Fragment() {
             binding.likeCount.text = "${likes.toString()} Likes"
         }
 
+        // Add Comment Button functionality
         binding.commentButton.setOnClickListener{
             val bottomSheetFragment = CommentBottomSheetFragment.newInstance(postID!!)
             bottomSheetFragment.show(parentFragmentManager,"Comment Box")
         }
     }
 
+    // Function to Geocode coordinated into City, Country format
     private fun getLocationFromCoordinates(latitude: Double, longitude: Double) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -135,11 +131,11 @@ class PostDetailFragment : Fragment() {
                     activity?.runOnUiThread {
                         if (addresses.isNotEmpty()) {
                             val address = addresses[0]
-                            val state = address.adminArea
+                            val city = address.subAdminArea
                             val country = address.countryName
-                            if (state != null && country != null) {
+                            if (city != null && country != null) {
                                 binding.location.visibility = View.VISIBLE
-                                binding.location.text = "$state, $country"
+                                binding.location.text = "$city, $country"
                             } else {
                                 binding.location.visibility = View.GONE
                             }
@@ -151,11 +147,11 @@ class PostDetailFragment : Fragment() {
                 val addresses = geocoder.getFromLocation(latitude, longitude, 1)
                 if (!addresses.isNullOrEmpty()) {
                     val address = addresses[0]
-                    val state = address.adminArea
+                    val city = address.subAdminArea
                     val country = address.countryName
-                    if (state != null && country != null) {
+                    if (city != null && country != null) {
                         binding.location.visibility = View.VISIBLE
-                        binding.location.text = "$state, $country"
+                        binding.location.text = "$city, $country"
                     } else {
                         binding.location.visibility = View.GONE
                     }

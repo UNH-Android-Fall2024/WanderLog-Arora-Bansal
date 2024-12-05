@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
@@ -34,6 +33,7 @@ class AddPostFragment : Fragment() {
     private var longitude: Double = 0.0
     private val geocoder by lazy { Geocoder(requireContext(), Locale.getDefault()) }
     private lateinit var locationHelper: LocationHelper
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,50 +42,36 @@ class AddPostFragment : Fragment() {
         viewBinding = FragmentAddPostBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         startLocationUpdates()
-
         imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable("imageUri", Uri::class.java)
         } else {
             @Suppress("DEPRECATION")
             arguments?.getParcelable("imageUri")
         }
-
         imageUri?.let {
             viewBinding.postImage.setImageURI(it)
         } ?: run {
             Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
         }
-
         latitude = arguments?.getDouble("latitude", 0.0) ?: 0.0
         longitude = arguments?.getDouble("longitude", 0.0) ?: 0.0
-        Log.i("Camera1", "Location successfully updated - Lat: ${latitude}, Long: ${longitude}")
-
-//        if (latitude != 0.0 && longitude != 0.0) {
-//            updateLocationField()
-//        }
-
-
         viewBinding.postButton.setOnClickListener {
             uploadPost()
         }
     }
 
     private fun startLocationUpdates() {
-        Log.d("Camera1", "startLocationUpdates: Requesting location updates")
         locationHelper.getCurrentLocation { location ->
             location?.let {
                 latitude = it.latitude
                 longitude = it.longitude
-                Log.i("Camera12", "Location successfully updated - Lat: ${it.latitude}, Long: ${it.longitude}")
                 updateLocationField(latitude, longitude)
                 activity?.runOnUiThread {
                     viewBinding.postButton.isEnabled = true
                     viewBinding.locationInput.text = "$latitude,$longitude"
-                    Log.d("Camera1", "UI updated with new location")
                 }
             } ?: run {
                 Log.e("Camera1", "Failed to get location")
@@ -120,8 +106,6 @@ class AddPostFragment : Fragment() {
                 location = locationList
             )
             db.collection("posts").document(uniqueID.toString()).set(submit, SetOptions.merge())
-            Log.d("uploaded","Success $postPath")
-            Toast.makeText(requireContext(), "Selected Image: $imageUri", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_addPostFragment_to_navigation_home)
 
         }
@@ -134,7 +118,7 @@ class AddPostFragment : Fragment() {
                     activity?.runOnUiThread {
                         val locationText = if (addresses.isNotEmpty()) {
                             val address = addresses[0]
-                            "${address.adminArea ?: ""}, ${address.countryName ?: ""}"
+                            "${address.subAdminArea ?: ""}, ${address.countryName ?: ""}"
                         } else {
                             "$latitude, $longitude"
                         }
@@ -146,7 +130,7 @@ class AddPostFragment : Fragment() {
                 val addresses = geocoder.getFromLocation(latitude, longitude, 1)
                 val locationText = if (!addresses.isNullOrEmpty()) {
                     val address = addresses[0]
-                    "${address.adminArea ?: ""}, ${address.countryName ?: ""}"
+                    "${address.subAdminArea ?: ""}, ${address.countryName ?: ""}"
                 } else {
                     "$latitude, $longitude"
                 }
@@ -158,11 +142,8 @@ class AddPostFragment : Fragment() {
         }
     }
 
-    companion object {
-        fun newInstance(imageUri: Uri): AddPostFragment {
-            return AddPostFragment().apply {
-                arguments = bundleOf("imageUri" to imageUri)
-            }
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        locationHelper.stopLocationUpdates()
     }
 }

@@ -20,23 +20,16 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.storage
 import java.io.File
 
-// Adapter for the photo grid
 class PhotoGridAdapter(
     private val context: Context,
     private val photoList: ArrayList<Post>,
 ) : RecyclerView.Adapter<PhotoGridAdapter.PhotoViewHolder>() {
 
-    // ViewHolder for each grid item
     private var storage = Firebase.storage
     private var db = Firebase.firestore
     inner class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val photoImageView: ImageView = itemView.findViewById(R.id.photoImageView)
-
-
     }
-
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_photo, parent, false)
@@ -45,14 +38,11 @@ class PhotoGridAdapter(
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         val post = photoList[position]
-
-        Log.d("PostImage", post.imageUrl)
         val storageRef = storage.reference.child(post.imageUrl)
         val localFile = File.createTempFile(
             "tempImage", ".jpg"
         )
         storageRef.getFile(localFile).addOnSuccessListener {
-            // Local temp file has been created
             val bitmap = correctImageOrientationFromFile(localFile.toString())
             holder.photoImageView.setImageBitmap(bitmap)
         }.addOnFailureListener {
@@ -86,8 +76,6 @@ class PhotoGridAdapter(
             }
 
         }
-
-
         holder.itemView.setOnClickListener {
             Log.d("click", post.imageUrl)
             Navigation.createNavigateOnClickListener(R.id.action_showPhotosNavigation_to_postDetailFragment, bundle)
@@ -98,16 +86,12 @@ class PhotoGridAdapter(
     }
     private fun correctImageOrientationFromFile(imagePath: String): Bitmap? {
         try {
-
             val exifInterface = ExifInterface(imagePath)
             val orientation = exifInterface.getAttributeInt(
                 ExifInterface.TAG_ORIENTATION,
                 ExifInterface.ORIENTATION_NORMAL
             )
-
             val bitmap = BitmapFactory.decodeFile(imagePath)
-
-
             return when (orientation) {
                 ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
                 ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)

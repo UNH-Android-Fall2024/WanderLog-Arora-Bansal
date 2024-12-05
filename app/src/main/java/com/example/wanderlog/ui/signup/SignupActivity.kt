@@ -64,13 +64,7 @@ class SignupActivity : AppCompatActivity() {
 
     public override fun onStart() {
         super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            reload()
-        }
     }
-    // [END on_start_check_user]
     private fun verifyEnteredDetails() : Boolean{
         Log.d("Signup1", "Reached here" )
 
@@ -173,16 +167,6 @@ class SignupActivity : AppCompatActivity() {
                 Log.w(TAG, "Error adding document", e)
             }
     }
-    private fun sendEmailVerification() {
-        // [START send_email_verification]
-        val user = auth.currentUser!!
-        user.sendEmailVerification()
-            .addOnCompleteListener(this) { task ->
-                // Email Verification sent
-                Log.d("Verification","$task")
-            }
-        // [END send_email_verification]
-    }
 
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
@@ -198,9 +182,6 @@ class SignupActivity : AppCompatActivity() {
             binding.loading.visibility = View.INVISIBLE
 
         }
-    }
-
-    private fun reload() {
     }
 
     companion object {

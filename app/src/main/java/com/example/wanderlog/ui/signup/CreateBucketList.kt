@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.wanderlog.databinding.ActivityCreateBucketListBinding
 import com.example.wanderlog.ui.login.LoginActivity
 import com.google.firebase.Firebase

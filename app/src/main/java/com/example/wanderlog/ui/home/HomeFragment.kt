@@ -36,15 +36,13 @@ class HomeFragment : Fragment() {
     private lateinit var postAdapter: PostAdapter
     private var followingList: ArrayList<String> = arrayListOf()
     private var postList: ArrayList<Post> = arrayListOf()
-    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
-    private lateinit var locationHelper: LocationHelper
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("ShowHome", "Home page detected")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -52,10 +50,8 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_navigation_home_to_searchNavigation)
         }
 
-
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
         postAdapter = PostAdapter(requireContext(),this ,postList)
         recyclerView.adapter = postAdapter
         db.collection("connections").whereEqualTo("userID2", auth.currentUser!!.uid)

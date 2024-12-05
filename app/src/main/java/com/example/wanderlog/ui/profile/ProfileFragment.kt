@@ -1,6 +1,5 @@
 package com.example.wanderlog.ui.profile
 
-
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -41,7 +40,7 @@ import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import java.io.File
 
 class ProfileFragment : Fragment() {
-    private val BLUE_ICON_ID = "green"
+    private val BLUE_ICON_ID = "blue"
     private val SOURCE_ID = "source_id"
     private val LAYER_ID = "layer_id"
     private var _binding: FragmentProfileBinding? = null
@@ -72,7 +71,6 @@ class ProfileFragment : Fragment() {
 
 
         binding.editProfile.setOnClickListener {
-
             findNavController().navigate(R.id.action_navigation_profile_to_editProfileNavigation)
         }
 
@@ -103,7 +101,6 @@ class ProfileFragment : Fragment() {
                         "tempImage", ".jpg"
                     )
                     storageRef.getFile(localFile).addOnSuccessListener {
-                        // Local temp file has been created
                         val bitmap = correctImageOrientationFromFile(localFile.toString())
                         binding.profilePicture.setImageBitmap(bitmap)
                     }.addOnFailureListener {
@@ -169,7 +166,6 @@ class ProfileFragment : Fragment() {
                 style(Style.LIGHT) {
                     +atmosphere { }
                     +projection(ProjectionName.GLOBE)
-                    // prepare blue marker from resources
                     +image(
                         BLUE_ICON_ID,
                         ContextCompat.getDrawable(requireContext(),R.drawable.baseline_location_pin_24_blue)!!.toBitmap()

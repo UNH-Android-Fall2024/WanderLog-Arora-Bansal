@@ -2,7 +2,10 @@ package com.example.wanderlog.dataModel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,7 +23,6 @@ import java.io.File
 
 class UserAdapter(
     private var mList: List<UserCard>,
-    private val context: Context,
 ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -48,8 +50,7 @@ class UserAdapter(
                 "tempImage1", ".jpg"
             )
             storageRef.getFile(localFile).addOnSuccessListener {
-                // Local temp file has been created
-                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                val bitmap = correctImageOrientationFromFile(localFile.toString())
                 holder.profilePicture.setImageBitmap(bitmap)
             }.addOnFailureListener {
                 holder.profilePicture.setImageResource(R.drawable.baseline_image_24)
@@ -60,15 +61,41 @@ class UserAdapter(
         val bundle = Bundle().apply {
             putString("userID", text3)
         }
-//        holder.uid.text = text3
-//        holder.mImageView.setImageResource(imageResource)
         holder.itemView.setOnClickListener {
-            Log.d("MYTEST", text3)
-
             Navigation.createNavigateOnClickListener(R.id.action_searchNavigation_to_otherUserProfile, bundle)
                 .onClick(holder.username)
         }
 
+    }
+
+    private fun correctImageOrientationFromFile(imagePath: String): Bitmap? {
+        try {
+
+            val exifInterface = ExifInterface(imagePath)
+            val orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+
+            val bitmap = BitmapFactory.decodeFile(imagePath)
+
+
+            return when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+                else -> bitmap // No rotation needed
+            }
+        } catch (e: Exception) {
+            Log.e("ImageRotationError", "Error correcting image orientation: ${e.message}")
+        }
+        return null
+    }
+
+    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     override fun getItemCount(): Int {
