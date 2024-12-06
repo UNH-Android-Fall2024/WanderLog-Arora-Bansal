@@ -13,10 +13,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wanderlog.R
@@ -93,17 +91,17 @@ class PostAdapter(
             holder.locationText.visibility = View.GONE
         }
         if (post.imageUrl!="") {
-            val storageRef = storage.reference.child(post.imageUrl.toString())
+            val storageRef = storage.reference.child(post.imageUrl)
             val localFile = File.createTempFile(
                 "tempImage", ".jpg"
             )
             storageRef.getFile(localFile).addOnSuccessListener {
-                // Local temp file has been created
                 val bitmap = correctImageOrientationFromFile(localFile.toString())
                 holder.postImageView.setImageBitmap(bitmap)
             }.addOnFailureListener {
                 holder.postImageView.setImageResource(R.drawable.baseline_image_24)
             }
+
         }
         if(post.userID in post.likes){
             holder.likeButton.visibility = View.GONE

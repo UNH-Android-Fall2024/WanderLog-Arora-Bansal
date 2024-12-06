@@ -46,7 +46,6 @@ class SignupActivity : AppCompatActivity() {
         }
 
         login.setOnClickListener {
-            Log.d("createUser","Continue clicked")
             db.collection("users").whereEqualTo("username", binding.usernameId.text.toString())
                 .get()
                 .addOnSuccessListener { result ->
@@ -66,16 +65,11 @@ class SignupActivity : AppCompatActivity() {
         super.onStart()
     }
     private fun verifyEnteredDetails() : Boolean{
-        Log.d("Signup1", "Reached here" )
-
         val pass = binding.password.text.toString()
         val cpass = binding.confirmpassword.text.toString()
         val email = binding.email.text.toString()
         val name = binding.fullname.text.toString()
         val username = binding.usernameId.text.toString()
-
-        Log.d("username","$userList")
-
         if (name != "" && email != "" && pass != "" && cpass != "" && username!="") {
             if (userList!!.size == 0 ) {
                 if (pass == cpass) {
@@ -113,25 +107,21 @@ class SignupActivity : AppCompatActivity() {
     private fun createAccount(email: String, password: String) {
         // [START create_user_with_email]
         if (verifyEnteredDetails()) {
-            Log.d("Signup1", "Success?" )
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "createUserWithEmail:success")
                         val user = auth.currentUser
                         user?.let {
                             // Name, email address, and profile photo Url
                             val name = binding.fullname.text.toString()
                             val username = binding.usernameId.text.toString()
                             val uid = it.uid
-                            Log.d("UserDetails", "$name $email $uid $username")
                             storeUserData(uid, name, email, username)
                         }
                         updateUI(user)
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
                         Toast.makeText(
                             baseContext,
                             "Authentication failed.",
@@ -140,11 +130,6 @@ class SignupActivity : AppCompatActivity() {
                     }
                 }
         }
-        else{
-            Log.d("Signup","Fail")
-        }
-
-        // [END create_user_with_email]
     }
 
     private fun storeUserData(uid: String, name: String, email: String, username:String ){

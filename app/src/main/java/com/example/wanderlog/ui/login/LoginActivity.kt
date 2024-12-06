@@ -17,7 +17,6 @@ import com.example.wanderlog.MainActivity
 import com.example.wanderlog.databinding.ActivityLoginBinding
 import com.example.wanderlog.ui.signup.SignupActivity
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 
@@ -112,18 +111,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn(email: String, password: String) {
-        Log.d("SignIn","reached function")
         try {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
-                    Log.d("SignIn", "reached function part 2")
                     if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success")
                         val user = auth.currentUser
                         updateUI(user)
                     } else {
-                        // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
                         binding.failed!!.visibility = View.VISIBLE
                         binding.loading.visibility = View.GONE
@@ -132,7 +126,7 @@ class LoginActivity : AppCompatActivity() {
                 }
         }
         catch(e: Throwable){
-            Log.d(TAG, "Email Not Found?")
+            Log.e(TAG, "Email Not Found?")
         }
     }
 

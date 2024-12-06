@@ -1,7 +1,6 @@
 package com.example.wanderlog.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,8 +65,7 @@ class CommentBottomSheetFragment : BottomSheetDialogFragment() {
             .addOnSuccessListener {documentSnapshot ->
                 val user = documentSnapshot.toObject<User>()
                 username = user!!.username
-                Log.d("PostComment",username)
-                var newComment = hashMapOf("comment" to binding.newComment.text.toString(), "username" to username )
+                val newComment = hashMapOf("comment" to binding.newComment.text.toString(), "username" to username )
                 comments.add(newComment)
                 commentAdapter.notifyDataSetChanged()
                 db.collection("posts").document(postID).update("comments", FieldValue.arrayUnion(newComment))

@@ -1,6 +1,5 @@
 package com.example.wanderlog.dataModel
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,8 +25,6 @@ class CommentAdapter(
         val comment = comments[position]
         holder.commentUsername.text = comment["username"]
         holder.textComment.text = comment["comment"]
-        Log.d("Comment", comment.toString())
-
     }
 
     override fun getItemCount() = comments.size

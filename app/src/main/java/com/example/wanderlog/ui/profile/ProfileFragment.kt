@@ -149,8 +149,6 @@ class ProfileFragment : Fragment() {
                     val location = document.toObject<Location>()
                     location.locationID = document.id
                     markerCoordinates.add(Point.fromLngLat(location.longitude, location.latitude))
-                    Log.d("ShowLocation", document.id)
-
                 }
 
             }

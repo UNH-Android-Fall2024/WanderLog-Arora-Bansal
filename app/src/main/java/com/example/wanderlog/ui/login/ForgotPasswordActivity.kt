@@ -21,14 +21,10 @@ class ForgotPasswordActivity : AppCompatActivity() {
         val email = binding.email
         val send = binding.send
         send.setOnClickListener {
-            Log.d("Reset Password", "${email.text}")
-
             auth.sendPasswordResetEmail(email.text.toString())
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Log.d("Reset Password", "Email sent.")
                         Toast.makeText(applicationContext, "Email Sent.", Toast.LENGTH_LONG).show()
-
                     }
                 }
             if(auth.currentUser!=null){

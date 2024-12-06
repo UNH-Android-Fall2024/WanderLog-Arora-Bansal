@@ -41,13 +41,10 @@ class CreateBucketList : AppCompatActivity() {
     private fun getLocationCoordinates(city: String, country: String, callback: (Double, Double) -> Unit) {
         try {
             val locationName = "$city, $country"
-            Log.d("Geocoding", "Attempting to get coordinates for: $locationName")
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 geocoder.getFromLocationName(locationName, 1) { addresses ->
                     val latitude = addresses.firstOrNull()?.latitude ?: 0.0
                     val longitude = addresses.firstOrNull()?.longitude ?: 0.0
-                    Log.d("Geocoding", "Found coordinates for $locationName: $latitude, $longitude")
                     runOnUiThread {
                         callback(latitude, longitude)
                     }
@@ -57,7 +54,6 @@ class CreateBucketList : AppCompatActivity() {
                 val addresses = geocoder.getFromLocationName(locationName, 1)
                 val latitude = addresses?.firstOrNull()?.latitude ?: 0.0
                 val longitude = addresses?.firstOrNull()?.longitude ?: 0.0
-                Log.d("Geocoding", "Found coordinates for $locationName: $latitude, $longitude")
                 callback(latitude, longitude)
             }
         } catch (e: Exception) {
@@ -79,22 +75,13 @@ class CreateBucketList : AppCompatActivity() {
                 "longitude" to longitude,
                 "visited" to false
             )
-
-            // Add the new item to the list and notify the adapter
             db.collection("locations")
                 .add(location)
-                .addOnSuccessListener { documentReference ->
-                    Log.d(
-                        "AddLocation",
-                        "DocumentSnapshot written with ID: ${documentReference.id}"
-                    )
-                }
                 .addOnFailureListener { e ->
                     Log.w("AddLocation", "Error adding document", e)
                 }
         }
         } else {
-            // Show an error or prompt the user to fill both fields
             binding.countryInput.error = if (country.isEmpty()) "Please enter a country" else null
             binding.cityInput.error = if (city.isEmpty()) "Please enter a city" else null
         }

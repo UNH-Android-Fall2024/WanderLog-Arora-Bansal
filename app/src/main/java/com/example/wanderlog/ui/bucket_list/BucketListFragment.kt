@@ -64,7 +64,6 @@ class BucketListFragment : Fragment() {
                     val location = document.toObject<Location>()
                     location.locationID = document.id
                     bucketListItems.add(location)
-                    Log.d("ShowLocation", "Loaded location: ${location.city}, ${location.country}")
                 }
                 adapter.notifyDataSetChanged()
             }
@@ -141,10 +140,6 @@ class BucketListFragment : Fragment() {
                                 visited = false
                             )
                             bucketListItems.add(newLocation)
-                            Log.d(
-                                "AddLocation",
-                                "Added location with ID: ${documentReference.id}, Lat: $latitude, Long: $longitude"
-                            )
                             activity?.runOnUiThread {
                                 adapter.notifyDataSetChanged()
                             }

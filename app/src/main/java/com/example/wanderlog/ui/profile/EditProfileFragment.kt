@@ -20,7 +20,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.wanderlog.R
 import com.example.wanderlog.dataModel.User
@@ -72,7 +71,6 @@ class EditProfileFragment : Fragment() {
             }
         }
         binding.resetPassword.setOnClickListener{
-            Log.d("Reset Password", currentUser.email)
             val myIntent = Intent(
                 activity,
                 ForgotPasswordActivity::class.java
@@ -110,16 +108,13 @@ class EditProfileFragment : Fragment() {
         val storageRef = storage.reference
         val riversRef = storageRef.child("profile/${auth.currentUser!!.uid}.jpg")
         val uploadTask = riversRef.putFile(image)
-        Log.d("uploaded",image.toString())
 
         uploadTask.addOnFailureListener {
-            Log.d("uploadedfail","profile/${auth.currentUser!!.uid}.jpg")
         }.addOnSuccessListener { taskSnapshot ->
             val submit = hashMapOf(
                 "profilePicture" to "profile/${auth.currentUser!!.uid}.jpg"
             )
             db.collection("users").document(auth.currentUser!!.uid).set(submit, SetOptions.merge())
-            Log.d("uploaded","Success profile/${auth.currentUser!!.uid}.jpg")
             Toast.makeText(requireContext(), "Selected Image: $image", Toast.LENGTH_SHORT).show()
 
         }

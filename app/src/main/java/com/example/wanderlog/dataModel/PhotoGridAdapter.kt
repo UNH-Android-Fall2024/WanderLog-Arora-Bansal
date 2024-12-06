@@ -77,7 +77,6 @@ class PhotoGridAdapter(
 
         }
         holder.itemView.setOnClickListener {
-            Log.d("click", post.imageUrl)
             Navigation.createNavigateOnClickListener(R.id.action_showPhotosNavigation_to_postDetailFragment, bundle)
                 .onClick(holder.itemView)
 

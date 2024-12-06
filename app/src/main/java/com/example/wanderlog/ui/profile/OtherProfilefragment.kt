@@ -107,9 +107,6 @@ class OtherProfileFragment : Fragment() {
         )
         db.collection("connections").document("$userID ${auth.currentUser!!.uid}")
             .set(submit)
-            .addOnSuccessListener {
-                Log.d("Follow", "DocumentSnapshot added with ID:$userID ${auth.currentUser!!.uid}")
-            }
     }
     private fun unfollowUser(){
         db.collection("connections").document("$userID ${auth.currentUser!!.uid}")
@@ -139,7 +136,7 @@ class OtherProfileFragment : Fragment() {
         return null
     }
 
-    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+    private fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
         val matrix = Matrix()
         matrix.postRotate(degrees)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
@@ -154,8 +151,6 @@ class OtherProfileFragment : Fragment() {
                     val location = document.toObject<Location>()
                     location.locationID = document.id
                     OtherProfileFragment.markerCoordinates.add(Point.fromLngLat(location.longitude, location.latitude))
-                    Log.d("ShowLocation", document.id)
-
                 }
 
             }

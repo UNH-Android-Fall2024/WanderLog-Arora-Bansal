@@ -1,5 +1,4 @@
 package com.example.wanderlog.dataModel
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,6 @@ class BucketListAdapter(
 
     override fun onBindViewHolder(holder: BucketListViewHolder, position: Int) {
         val item = items[position]
-        Log.d("ShowLocations",item.city)
         holder.itemText.text = "${item.city}, ${item.country}"
         holder.itemText.isChecked = item.visited
 

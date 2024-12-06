@@ -74,7 +74,7 @@ class AddPostFragment : Fragment() {
                     viewBinding.locationInput.text = "$latitude,$longitude"
                 }
             } ?: run {
-                Log.e("Camera1", "Failed to get location")
+                Log.e("Location Error", "Failed to get location")
             }
         }
     }
@@ -97,7 +97,6 @@ class AddPostFragment : Fragment() {
         val locationList = arrayListOf(latitude, longitude)
 
         uploadTask.addOnFailureListener {
-            Log.d("uploadedfail",postPath)
         }.addOnSuccessListener { taskSnapshot ->
             val submit = Post(
                 userID = auth.currentUser!!.uid,
@@ -137,7 +136,7 @@ class AddPostFragment : Fragment() {
                 viewBinding.locationInput.setText(locationText)
             }
         } catch (e: Exception) {
-            Log.e("AddPost", "Geocoding failed", e)
+            Log.e("Geocoding Error", "Geocoding failed", e)
             viewBinding.locationInput.setText("$latitude, $longitude")
         }
     }
