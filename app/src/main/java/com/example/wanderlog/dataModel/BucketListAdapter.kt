@@ -1,3 +1,4 @@
+// / https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView
 package com.example.wanderlog.dataModel
 import android.view.LayoutInflater
 import android.view.View
